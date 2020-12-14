@@ -15,7 +15,9 @@ namespace api.Models
             modelBuilder.Entity<User>(
                 user =>
                 {
-                    user.Property(e => e.Name).IsRequired();
+                    user.Property(e => e.Name)
+                        .IsRequired()
+                        .HasMaxLength(256); // Set max nvarchar to be performant on indexing
                     user.ToTable("User"); // Conform to singular table name convention
                 }
             );
@@ -23,7 +25,9 @@ namespace api.Models
             modelBuilder.Entity<Ticket>(
                 ticket =>
                 {
-                    ticket.Property(e => e.Title).IsRequired();
+                    ticket.Property(e => e.Title)
+                          .IsRequired()
+                          .HasMaxLength(256); // Set max nvarchar to be performant on indexing
                     ticket.Property(e => e.PostedOn).IsRequired();
                     ticket.ToTable("Ticket"); // Conform to singular table name convention
                 }
