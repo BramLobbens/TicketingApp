@@ -4,7 +4,7 @@ namespace api.Models
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        public DbSet<Person> Persons { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -12,23 +12,28 @@ namespace api.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>(
-                user =>
+            modelBuilder.Entity<Person>(
+                person =>
                 {
-                    user.Property(e => e.Name)
+                    person.Property(p => p.Name)
                         .IsRequired()
                         .HasMaxLength(256); // Set max nvarchar to be performant on indexing
-                    user.ToTable("User"); // Conform to singular table name convention
+                    person.HasMany(p => p.Tickets);
+                    person.ToTable("Person"); // Conform to singular table name convention
                 }
             );
 
             modelBuilder.Entity<Ticket>(
                 ticket =>
                 {
-                    ticket.Property(e => e.Title)
-                          .IsRequired()
-                          .HasMaxLength(256); // Set max nvarchar to be performant on indexing
-                    ticket.Property(e => e.PostedOn).IsRequired();
+                    ticket.Property(t => t.Title)
+                        .IsRequired()
+                        .HasMaxLength(256); // Set max nvarchar to be performant on indexing
+                    ticket.Property(t => t.PostedOn)
+                        .IsRequired();
+                    ticket.HasOne(t => t.Person)
+                        .WithMany(p => p.Tickets)
+                        .HasForeignKey(t => t.PersonId);
                     ticket.ToTable("Ticket"); // Conform to singular table name convention
                 }
             );
