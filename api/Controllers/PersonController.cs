@@ -8,54 +8,54 @@ using Microsoft.AspNetCore.Http;
 namespace api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/user")]
+    [Route("api/person")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class PersonController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public UserController(ApplicationDbContext context)
+        public PersonController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Person>>> GetPersons()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Persons.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<Person>> GetPerson(int id)
         {
 
-            var user =  await _context.Users.FindAsync(id);
-            if (user is null)
+            var person =  await _context.Persons.FindAsync(id);
+            if (person is null)
             {
                 return NotFound();
             }
 
-            return user;
+            return person;
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> Postuser(User user)
+        public async Task<ActionResult<Person>> Postperson(Person person)
         {
-            _context.Users.Add(user);
+            _context.Persons.Add(person);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { user.Id }, user );
+            return CreatedAtAction("GetPerson", new { person.Id }, person );
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, User user)
+        public async Task<IActionResult> Update(int id, Person person)
         {
-            if (id != user.Id)
+            if (id != person.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(person).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -67,14 +67,14 @@ namespace api.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var person = await _context.Persons.FindAsync(id);
 
-            if (user is null)
+            if (person is null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.Persons.Remove(person);
             await _context.SaveChangesAsync();
 
             return NoContent();

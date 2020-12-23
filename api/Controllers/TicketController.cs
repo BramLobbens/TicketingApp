@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.Models;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace api.Controllers
 {
@@ -20,16 +21,39 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets()
+        public async Task<IEnumerable<TicketDto>> GetTickets()
         {
-            return await _context.Tickets.ToListAsync();
+            var tickets = _context.Tickets
+                .Join(_context.Persons,
+                    t => t.PersonId,
+                    p => p.Id,
+                    (t, p) => new TicketDto
+                    {
+                        TicketId = t.Id,
+                        Title = t.Title,
+                        Content = t.Content,
+                        PostedOn = t.PostedOn,
+                        PostedBy = p.Name
+                    })
+                .ToListAsync();
+
+            return await tickets;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Ticket>> GetTicket(int id)
+        public async Task<ActionResult<TicketDto>> GetTicket(int id)
         {
-
-            var ticket =  await _context.Tickets.FindAsync(id);
+            //var ticket =  await _context.Tickets.FindAsync(id);
+            var ticket = await _context.Tickets
+                .Include(t => t.Person)
+                .Select(t => new TicketDto()
+                {
+                    TicketId = t.Id,
+                    Title = t.Title,
+                    Content = t.Content,
+                    PostedOn = t.PostedOn,
+                    PostedBy = t.Person.Name
+                }).SingleOrDefaultAsync(t => t.TicketId == id);
             if (ticket is null)
             {
                 return NotFound();
