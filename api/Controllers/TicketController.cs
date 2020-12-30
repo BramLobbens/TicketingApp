@@ -23,27 +23,22 @@ namespace api.Controllers
         [HttpGet]
         public async Task<IEnumerable<TicketDto>> GetTickets()
         {
-            var tickets = _context.Tickets
-                .Join(_context.Persons,
-                    t => t.PersonId,
-                    p => p.Id,
-                    (t, p) => new TicketDto
-                    {
-                        TicketId = t.Id,
-                        Title = t.Title,
-                        Content = t.Content,
-                        PostedOn = t.PostedOn,
-                        PostedBy = p.Name
-                    })
+            return await _context.Tickets
+                .Include(t => t.Person)
+                .Select(t => new TicketDto()
+                {
+                    TicketId = t.Id,
+                    Title = t.Title,
+                    Content = t.Content,
+                    PostedOn = t.PostedOn,
+                    PostedBy = t.Person.Name
+                })
                 .ToListAsync();
-
-            return await tickets;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TicketDto>> GetTicket(int id)
         {
-            //var ticket =  await _context.Tickets.FindAsync(id);
             var ticket = await _context.Tickets
                 .Include(t => t.Person)
                 .Select(t => new TicketDto()
@@ -53,7 +48,8 @@ namespace api.Controllers
                     Content = t.Content,
                     PostedOn = t.PostedOn,
                     PostedBy = t.Person.Name
-                }).SingleOrDefaultAsync(t => t.TicketId == id);
+                })
+                .SingleOrDefaultAsync(t => t.TicketId == id);
             if (ticket is null)
             {
                 return NotFound();
@@ -65,6 +61,7 @@ namespace api.Controllers
         [HttpPost]
         public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
         {
+            // add check if PersonId is existing
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
 
