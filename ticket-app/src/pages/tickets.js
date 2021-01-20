@@ -25,9 +25,10 @@ class TicketList extends React.Component {
         <ul>
           {tickets.map((ticket) => (
             <li key={ticket.id}>
-              <h3>{ticket.title}</h3>
+              <h3>Subject: {ticket.title}</h3>
+              <p>By: {ticket.postedBy}</p>
               <p>{ticket.content}</p>
-              <p>{ticket.postedOn}</p>
+              <p>Posted on: {ticket.postedOn}</p>
             </li>
           ))}
         </ul>
