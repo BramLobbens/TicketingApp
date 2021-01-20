@@ -23,6 +23,7 @@ namespace api.Models
                     person.Property(p => p.Name)
                         .IsRequired()
                         .HasMaxLength(256); // Set max nvarchar to be performant on indexing
+                    person.Ignore(p => p.Password); // Do not map password to Person table
                     person.HasMany(p => p.Tickets);
                     person.ToTable("Person"); // Conform to singular table name convention
                 }

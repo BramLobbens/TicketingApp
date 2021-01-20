@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace api.Controllers
 {
@@ -29,7 +30,7 @@ namespace api.Controllers
         public async Task<ActionResult<Person>> GetPerson(int id)
         {
 
-            var person =  await _context.Persons.FindAsync(id);
+            var person = await _context.Persons.FindAsync(id);
             if (person is null)
             {
                 return NotFound();
@@ -39,12 +40,19 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Person>> Postperson(Person person)
+        public async Task<ActionResult<Person>> PostPerson(Person person)
         {
+            var hasher = new PasswordHasher<Person>();
+
+            _context.ApplicationUsers.Add(new ApplicationUser
+            {
+                UserName = person.Name,
+                PasswordHash = hasher.HashPassword(person, person.Password)
+            });
             _context.Persons.Add(person);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPerson", new { person.Id }, person );
+            return CreatedAtAction("GetPerson", new { person.Id }, person);
         }
 
         [HttpPut("{id}")]
