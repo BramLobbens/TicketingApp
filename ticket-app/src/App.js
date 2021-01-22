@@ -21,6 +21,9 @@ export default function App() {
       <Route exact path={ROUTES.SIGN_IN}>
         <Signin />
       </Route>
+      {/* <Route exact path="/auth/sign-up"
+        render={() => (currentUser ? <Redirect to="/" /> : <SignUp />)}
+      /> */}
     </Router>
   );
 }

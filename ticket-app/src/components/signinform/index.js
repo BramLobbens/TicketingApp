@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-import {} from "./styles/ticketform";
+import {} from "./styles/signinform";
 import * as API from "../../constants/api";
 
 class Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      title: "",
-      content: "",
+      username: "",
+      password: "",
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -19,20 +19,20 @@ class Form extends Component {
   }
 
   handleSubmit(event) {
-    const url = API.TICKET;
+    const url = API.SIGNIN;
 
-    const ticket = {
-      personId: 1, // temp for testing
-      title: this.state.title,
-      content: this.state.content,
-      postedOn: new Date(),
+    const signin = {
+      name: this.state.username,
+      password: this.state.password,
     };
 
     const request = new Request(url, {
       method: "POST",
-      body: JSON.stringify(ticket),
+      body: JSON.stringify(signin),
       headers: new Headers({
         "Content-Type": "application/json",
+        "crossDomain": true,
+        "xhrFields": { "withCredentials": true }
       }),
     });
 
@@ -46,29 +46,30 @@ class Form extends Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label htmlFor="title">Subject</label>
+        <label htmlFor="username">Username</label>
         <input
-          name="title"
+          name="username"
           type="text"
-          value={this.state.title}
+          value={this.state.username}
           autoComplete="false"
           onChange={this.handleChange}
-          placeholder="Subject"
+          placeholder="Username"
         />
-        <label htmlFor="content">Description</label>
-        <textarea
-          name="content"
-          value={this.state.content}
+        <label htmlFor="password">Password</label>
+        <input
+          name="password"
+          type="password"
+          value={this.state.password}
           autoComplete="false"
           onChange={this.handleChange}
-          placeholder="Description"
+          placeholder="Password"
         />
-        <button type="submit">Submit</button>
+        <button type="submit">Sign in</button>
       </form>
     );
   }
 }
 
-export default function TicketForm(props) {
+export default function SigninForm(props) {
   return <Form />;
 }
