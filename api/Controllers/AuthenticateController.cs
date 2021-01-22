@@ -1,14 +1,17 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using api.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace api.Controllers
 {
@@ -17,37 +20,58 @@ namespace api.Controllers
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _config;
 
-        public AuthenticateController(UserManager<ApplicationUser> userManager)
+        public AuthenticateController(UserManager<ApplicationUser> userManager, IConfiguration config)
         {
-            this.userManager = userManager;
+            _userManager = userManager;
+            _config = config;
         }
 
         [HttpPost]
         public async Task<ActionResult> Signin(Person person)
         {
-            var user = await userManager.FindByNameAsync(person.Name);
-            if (user != null && await userManager.CheckPasswordAsync(user, person.Password))
+            var user = await _userManager.FindByNameAsync(person.Name);
+            if (user != null && await _userManager.CheckPasswordAsync(user, person.Password))
             {
-                var authClaims = new []
+                var claims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    new Claim(ClaimTypes.Name, Guid.NewGuid().ToString())
                 };
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("7S79jvOkEdwoRqHx"));
-                var token = new JwtSecurityToken(
-                    issuer: "https://dotnetdetail.net",
-                    audience: "https://dotnetdetail.net",
-                    expires: DateTime.Now.AddDays(5),
-                    claims: authClaims,
-                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                    );
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
-                });
+
+                var claimsIdentity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties();
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                // var authClaims = new []
+                // {
+                //     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                //     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                // };
+                // var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                // var token = new JwtSecurityToken(
+                //     issuer: _config["Jwt:Issuer"],
+                //     audience: _config["Jwt:Issuer"],
+                //     expires: DateTime.Now.AddMinutes(60),
+                //     claims: authClaims,
+                //     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                //     );
+                // var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+                // Response.Cookies.Append("token", tokenString);
+
+                // return Ok(new
+                // {
+                //     token = tokenString,
+                //     expiration = token.ValidTo
+                // });
+                return Ok();
             }
             return Unauthorized();
         }

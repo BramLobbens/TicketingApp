@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api.Controllers
 {
@@ -13,11 +14,13 @@ namespace api.Controllers
     [ApiController]
     public class PersonController : ControllerBase
     {
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationDbContext _context;
 
-        public PersonController(ApplicationDbContext context)
+        public PersonController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _context = context;
+            this.userManager = userManager;
         }
 
         [HttpGet]
@@ -40,21 +43,22 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Person>> PostPerson(Person person)
+        public async Task<ActionResult<Person>> Register(Person person)
         {
-            var hasher = new PasswordHasher<Person>();
-
-            _context.ApplicationUsers.Add(new ApplicationUser
+            var user = new ApplicationUser
             {
                 UserName = person.Name,
-                PasswordHash = hasher.HashPassword(person, person.Password)
-            });
+                Email = person.Email
+            };
+            await userManager.CreateAsync(user, person.Password);
+
             _context.Persons.Add(person);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPerson", new { person.Id }, person);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Person person)
         {
@@ -69,6 +73,7 @@ namespace api.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

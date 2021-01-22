@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using api.Models;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api.Controllers
 {
@@ -58,16 +59,17 @@ namespace api.Controllers
             return ticket;
         }
 
+        [Authorize] // requires authentication
         [HttpPost]
         public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
         {
-            // add check if PersonId is existing
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTicket", new { ticket.Id }, ticket );
         }
 
+        [Authorize] // requires authentication
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Ticket ticket)
         {
@@ -82,6 +84,7 @@ namespace api.Controllers
             return NoContent();
         }
 
+        [Authorize] // requires authentication
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
