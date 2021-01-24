@@ -48,7 +48,8 @@ namespace api.Controllers
                     Title = t.Title,
                     Content = t.Content,
                     PostedOn = t.PostedOn,
-                    PostedBy = t.Person.Name
+                    PostedBy = t.Person.Name,
+                    Replies = t.TicketReplies
                 })
                 .SingleOrDefaultAsync(t => t.TicketId == id);
             if (ticket is null)

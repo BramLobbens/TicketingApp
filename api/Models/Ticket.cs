@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace api.Models
 {
@@ -10,5 +11,6 @@ namespace api.Models
         public string Content { get; set; }
         public DateTime PostedOn { get; set; }
         public Person Person { get; set; }
+        public ICollection<TicketReply> TicketReplies { get; set; }
     }
 }

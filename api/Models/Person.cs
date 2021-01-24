@@ -9,5 +9,6 @@ namespace api.Models
         public string Password { get; set; }
         public string Email { get; set; }
         public ICollection<Ticket> Tickets { get; set; }
+        public ICollection<TicketReply> TicketReplies { get; set; }
     }
 }
