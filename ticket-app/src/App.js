@@ -30,6 +30,9 @@ export default function App() {
           <li>
             <Link to={ROUTES.SIGN_IN}>Sign in</Link>
           </li>
+          <li>
+            <Link to="">My Tickets</Link>
+          </li>
         </ul>
       </nav>
 
@@ -52,6 +55,12 @@ export default function App() {
         <Route exact path={ROUTES.SIGN_IN} component={Signin}>
           <Signin />
         </Route>
+        {/*
+          Show created and assigned tickets upon signin
+        */}
+        {/* <Route exact path={} component={}>
+          <MyTickets />
+        </Route> */}
         {/* <Route exact path="/auth/sign-up"
         render={() => (currentUser ? <Redirect to="/" /> : <SignUp />)}
       /> */}

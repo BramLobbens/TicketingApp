@@ -1,6 +1,7 @@
 import React from "react";
-import { Ticket } from "../components";
+import { Ticket, ReplyForm } from "../components";
 import API from "../utils/api";
+import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 class TicketItem extends React.Component {
@@ -11,6 +12,7 @@ class TicketItem extends React.Component {
       isLoading: true,
       found: false,
       ticket: {},
+      replies: []
     };
   }
 
@@ -25,6 +27,7 @@ class TicketItem extends React.Component {
           isLoading: false,
           found: true,
           ticket: { ...ticketData },
+          replies: ticketData.replies
         },
       });
     } catch (e) {
@@ -33,23 +36,52 @@ class TicketItem extends React.Component {
   }
 
   render() {
-    const { found, ticket, isLoading } = this.state;
+    const { found, ticket, replies, isLoading } = this.state;
+
+    console.log(replies);
 
     const notFoundMessage = <span className="">Not found.</span>;
     const ticketDetails = (
       <Ticket
         isLoading={isLoading}
-        id={ticket.tickeId}
+        id={ticket.ticketId}
         name={ticket.postedBy}
         title={ticket.title}
         content={ticket.content}
       />
     );
-    return <div>{found ? ticketDetails : notFoundMessage}</div>;
+    const ticketReplies = (
+        <div>
+            <ul>
+                {replies.map((reply) => (
+                <li key={reply.Id}>
+                    <p>{reply.postedBy}</p>
+                    <p>{reply.postedOn}</p>
+                    <p>{reply.content}</p>
+                </li>
+                ))}
+            </ul>
+        </div>
+    );
+    return (
+        <>
+            <div>
+                {found ? ticketDetails : notFoundMessage}
+            </div>
+            {ticketReplies}
+        </>
+        );
   }
 }
 
 export default function TicketPage(props) {
   const { id } = useParams();
-  return <TicketItem id={id} />;
+  return (
+    <>
+      <Link to="/tickets">/tickets</Link>
+      <Link to={`/tickets/${id}`}>/{id}</Link>
+      <TicketItem id={id} />
+      <ReplyForm />
+    </>
+  );
 }
