@@ -1,38 +1,50 @@
 import React from "react";
 import { Ticket } from "../components";
-import * as API from "../constants/api";
+import API from "../utils/api";
+import { Link } from "react-router-dom";
 
 class TicketList extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
+      isLoading: true,
       tickets: [],
     };
   }
 
-  componentDidMount() {
-    const url = API.TICKET;
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => this.setState({ tickets: data }));
+  async componentDidMount() {
+    let ticketData = await API.get("/ticket");
+    ticketData = ticketData.data;
+
+    this.setState({
+      ...this.state,
+      ...{
+        isLoading: false,
+        tickets: ticketData,
+      },
+    });
   }
 
-  // extract to Ticket component
   render() {
-    const { tickets } = this.state;
-    return (
-      <>
-        <ul>
-          {tickets.map((ticket) => (
-            <li key={ticket.id}>
-              <h3>Subject: {ticket.title}</h3>
-              <p>By: {ticket.postedBy}</p>
-              <p>{ticket.content}</p>
-              <p>Posted on: {ticket.postedOn}</p>
-            </li>
-          ))}
-        </ul>
-      </>
+    const { tickets, isLoading } = this.state;
+
+    return isLoading ? (
+      "loading"
+    ) : (
+      <ul>
+        {tickets.map((ticket) => (
+          <li key={ticket.ticketId}>
+            <Link to={`/tickets/${ticket.ticketId}`}>
+              <Ticket
+                isLoading={isLoading}
+                id={ticket.ticketId}
+                title={ticket.title}
+              />
+            </Link>
+          </li>
+        ))}
+      </ul>
     );
   }
 }
@@ -40,6 +52,7 @@ class TicketList extends React.Component {
 export default function Tickets(props) {
   return (
     <>
+      <h1>Tickets</h1>
       <TicketList />
     </>
   );

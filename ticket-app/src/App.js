@@ -1,29 +1,61 @@
 import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import * as ROUTES from "./constants/routes";
-import { Home, Tickets, CreateTicket, Signin, Signup } from "./pages";
+import {
+  Home,
+  TicketPage,
+  Tickets,
+  CreateTicket,
+  Signin,
+  Signup,
+} from "./pages";
 
 export default function App() {
   return (
     <Router>
-      <Route exact path={ROUTES.HOME}>
-        <Home />
-      </Route>
-      <Route exact path={ROUTES.TICKETS}>
-        <Tickets />
-      </Route>
-      <Route exact path={ROUTES.CREATE_TICKET}>
-        <CreateTicket />
-      </Route>
-      <Route exact path={ROUTES.SIGN_UP}>
-        <Signup />
-      </Route>
-      <Route exact path={ROUTES.SIGN_IN}>
-        <Signin />
-      </Route>
-      {/* <Route exact path="/auth/sign-up"
+      <nav>
+        <ul>
+          <li>
+            <Link to={ROUTES.HOME}>Home</Link>
+          </li>
+          <li>
+            <Link to={ROUTES.TICKETS}>Tickets</Link>
+          </li>
+          <li>
+            <Link to={ROUTES.CREATE_TICKET}>Create Ticket</Link>
+          </li>
+          <li>
+            <Link to={ROUTES.SIGN_UP}>Sign up</Link>
+          </li>
+          <li>
+            <Link to={ROUTES.SIGN_IN}>Sign in</Link>
+          </li>
+        </ul>
+      </nav>
+
+      <Switch>
+        <Route exact path={ROUTES.HOME}>
+          <Home />
+        </Route>
+        <Route exact path={ROUTES.TICKETS} component={Tickets}>
+          <Tickets />
+        </Route>
+        <Route exact path={"/tickets/:id"} component={TicketPage}>
+          <TicketPage />
+        </Route>
+        <Route exact path={ROUTES.CREATE_TICKET} component={CreateTicket}>
+          <CreateTicket />
+        </Route>
+        <Route exact path={ROUTES.SIGN_UP} component={Signup}>
+          <Signup />
+        </Route>
+        <Route exact path={ROUTES.SIGN_IN} component={Signin}>
+          <Signin />
+        </Route>
+        {/* <Route exact path="/auth/sign-up"
         render={() => (currentUser ? <Redirect to="/" /> : <SignUp />)}
       /> */}
+      </Switch>
     </Router>
   );
 }

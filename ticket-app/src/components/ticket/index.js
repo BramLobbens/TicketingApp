@@ -1,10 +1,50 @@
 import React from "react";
 import {} from "./styles/ticket";
 
+import PropTypes from "prop-types";
+
+class TicketItem extends React.Component {
+  render() {
+
+    const { id, name, title, content, isLoading } = this.props;
+
+    const ticketDetails = (
+      <div>
+        <p>{id}</p>
+        <h4 className="">{name}</h4>
+        <span className="">{title}</span>
+        <span className="">{content}</span>
+      </div>
+    );
+
+    const loadingMessage = <span className="">Loading...</span>;
+
+    return (
+      <div>
+        {isLoading ? loadingMessage : ticketDetails}
+      </div>
+    );
+  }
+}
+
+TicketItem.propTypes = {
+  id: PropTypes.number,
+  name: PropTypes.string,
+  title: PropTypes.string,
+  content: PropTypes.string,
+  isLoading: PropTypes.bool
+};
+
 export default function Ticket(props) {
   return (
-    <li>
-      <p>A ticket</p>
-    </li>
+    <>
+      <TicketItem
+        id={props.id}
+        name={props.name}
+        title={props.title}
+        content={props.content}
+        isLoading={props.isLoading}
+      />
+    </>
   );
 }
