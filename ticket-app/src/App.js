@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import * as ROUTES from "./constants/routes";
 import {
@@ -10,8 +10,31 @@ import {
   Signup,
 } from "./pages";
 
+class User extends Component {
+  state = {
+    user: null,
+  }
+
+  render() {
+    const { user } = this.state;
+
+    return (
+      <div>
+        {!user &&
+          <p>not logged in</p>
+        }
+        {user &&
+          <p>logged in</p>
+        }
+      </div>
+    );
+  }
+}
+
 export default function App() {
   return (
+    <>
+    <User/>
     <Router>
       <nav>
         <ul>
@@ -30,9 +53,11 @@ export default function App() {
           <li>
             <Link to={ROUTES.SIGN_IN}>Sign in</Link>
           </li>
+          {localStorage.userId &&
           <li>
-            <Link to="">My Tickets</Link>
+            <Link to={ROUTES.MY_TICKETS}>My Tickets</Link>
           </li>
+          }
         </ul>
       </nav>
 
@@ -42,6 +67,9 @@ export default function App() {
         </Route>
         <Route exact path={ROUTES.TICKETS} component={Tickets}>
           <Tickets />
+        </Route>
+        <Route exact path={ROUTES.MY_TICKETS} component={Tickets}>
+          <Tickets userId={localStorage.userId} />
         </Route>
         <Route exact path={"/tickets/:id"} component={TicketPage}>
           <TicketPage />
@@ -53,7 +81,7 @@ export default function App() {
           <Signup />
         </Route>
         <Route exact path={ROUTES.SIGN_IN} component={Signin}>
-          <Signin />
+          <Signin updateUser={(user) => this.setState({user})} />
         </Route>
         {/*
           Show created and assigned tickets upon signin
@@ -66,5 +94,6 @@ export default function App() {
       /> */}
       </Switch>
     </Router>
+    </>
   );
 }

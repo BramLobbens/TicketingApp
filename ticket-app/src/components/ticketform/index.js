@@ -22,7 +22,7 @@ class Form extends Component {
     const url = API.TICKET;
 
     const ticket = {
-      personId: 1, // temp for testing
+      personId: localStorage.getItem('userId'),
       title: this.state.title,
       content: this.state.content,
       postedOn: new Date(),
@@ -33,10 +33,13 @@ class Form extends Component {
       body: JSON.stringify(ticket),
       headers: new Headers({
         "Content-Type": "application/json",
+        "Authorization": 'Bearer ' + localStorage.getItem('jwt'),
       }),
     });
 
-    fetch(request)
+    fetch(request, {
+      //credentials: "include"
+    })
       .then((res) => res.json())
       .then((res) => console.log(res));
 

@@ -9,10 +9,10 @@ class TicketItem extends React.Component {
     const { id, name, title, content, isLoading } = this.props;
 
     const ticketDetails = (
-      <div>
-        <p>{id}</p>
+      <div style={{display: "inline", padding: "20px"}}>
+        <p style={{display: "flex"}}>#{id}</p>
         <h4 className="">{name}</h4>
-        <span className="">{title}</span>
+        <p style={{display: "flex"}}>{title}</p>
         <span className="">{content}</span>
       </div>
     );

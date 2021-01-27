@@ -31,7 +31,7 @@ class Form extends Component {
         // console.log(response)
 
         const reply = {
-            personId: 1,
+            personId: localStorage.getItem('userId'),
             ticketId: this.props.id,
             content: this.state.content,
             postedOn: new Date(),

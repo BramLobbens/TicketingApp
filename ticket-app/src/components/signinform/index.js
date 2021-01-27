@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {} from "./styles/signinform";
-import * as API from "../../constants/api";
+import axios from "axios";
 
 class Form extends Component {
   constructor(props) {
@@ -18,29 +18,30 @@ class Form extends Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
-  handleSubmit(event) {
-    const url = API.SIGNIN;
-
-    const signin = {
-      name: this.state.username,
-      password: this.state.password,
-    };
-
-    const request = new Request(url, {
-      method: "POST",
-      body: JSON.stringify(signin),
-      headers: new Headers({
-        "Content-Type": "application/json",
-        "crossDomain": true,
-        "xhrFields": { "withCredentials": true }
-      }),
-    });
-
-    fetch(request)
-      .then((res) => res.json())
-      .then((res) => console.log(res));
-
+  async handleSubmit(event) {
     event.preventDefault();
+
+    const { username: name, password } = this.state;
+
+    try {
+      const res = await axios({
+        method: 'POST',
+        url: 'https://localhost:5001/api/signin',
+        data: {
+          name,
+          password,
+        }
+      })
+      console.log(res);
+
+      const data = res.data;
+      localStorage.setItem('jwt', data.token);
+      localStorage.setItem('userId', data.userId);
+      localStorage.setItem('userName', data.userName);
+    }
+    catch (err) {
+      console.log(err);
+    }
   }
 
   render() {
@@ -70,6 +71,6 @@ class Form extends Component {
   }
 }
 
-export default function SigninForm(props) {
+export default function SigninForm() {
   return <Form />;
 }
