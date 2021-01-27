@@ -37,6 +37,23 @@ namespace api.Controllers
                 .ToListAsync();
         }
 
+        [HttpGet("user/{id}")]
+        public async Task<IEnumerable<TicketDto>> GetTicketsByUserId(int id)
+        {
+            return await _context.Tickets
+                .Include(t => t.Person)
+                .Where(t => t.Person.Id == id)
+                .Select(t => new TicketDto()
+                {
+                    TicketId = t.Id,
+                    Title = t.Title,
+                    Content = t.Content,
+                    PostedOn = t.PostedOn,
+                    PostedBy = t.Person.Name
+                })
+                .ToListAsync();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<TicketDto>> GetTicket(int id)
         {

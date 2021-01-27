@@ -14,13 +14,13 @@ namespace api.Controllers
     [ApiController]
     public class PersonController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 
         public PersonController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _context = context;
-            this.userManager = userManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -50,12 +50,15 @@ namespace api.Controllers
                 UserName = person.Name,
                 Email = person.Email
             };
-            await userManager.CreateAsync(user, person.Password);
+            var result = await _userManager.CreateAsync(user, person.Password);
+            if (result.Succeeded)
+            {
+                _context.Persons.Add(person);
+                await _context.SaveChangesAsync();
 
-            _context.Persons.Add(person);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPerson", new { person.Id }, person);
+                return CreatedAtAction("GetPerson", new { person.Id }, person);
+            }
+            return BadRequest();
         }
 
         [Authorize]

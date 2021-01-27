@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using System.Linq;
 
 namespace api.Controllers
 {
@@ -22,17 +23,20 @@ namespace api.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly ApplicationDbContext _context;
 
-        public AuthenticateController(UserManager<ApplicationUser> userManager, IConfiguration config)
+        public AuthenticateController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IConfiguration config)
         {
             _userManager = userManager;
             _config = config;
+            _context = context;
         }
 
         [HttpPost]
         public async Task<ActionResult> Signin(Person person)
         {
             var user = await _userManager.FindByNameAsync(person.Name);
+            int personId;
             if (user != null && await _userManager.CheckPasswordAsync(user, person.Password))
             {
                 // var claims = new List<Claim>
@@ -64,14 +68,21 @@ namespace api.Controllers
                     );
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-                Response.Cookies.Append("token", tokenString);
+                // Response.Cookies.Append("token", tokenString,
+                //     new CookieOptions
+                //     {
+                //         IsEssential = true
+                //     });
 
+                // Get PersonId
+                personId = _context.Persons.Where(p => p.Name == person.Name).Select(p => p.Id).SingleOrDefault();
                 return Ok(new
                 {
+                    userId = personId,
+                    userName = person.Name,
                     token = tokenString,
                     expiration = token.ValidTo
                 });
-                // return Ok();
             }
             return Unauthorized();
         }
