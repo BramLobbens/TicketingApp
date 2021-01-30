@@ -11,14 +11,13 @@ class TicketList extends React.Component {
       isLoading: true,
       tickets: [],
       userId: props.userId,
+      numberOfTickets: ""
     };
   }
 
   async componentDidMount() {
 
-    const { userId } = this.state;
-
-    console.log(userId);
+    const { userId, numberOfTickets } = this.state;
 
     let ticketData
     if (userId) {
@@ -35,16 +34,19 @@ class TicketList extends React.Component {
       ...{
         isLoading: false,
         tickets: ticketData,
+        numberOfTickets: ticketData.length
       },
     });
   }
 
   render() {
-    const { tickets, isLoading, userId } = this.state;
+    const { tickets, isLoading, userId, numberOfTickets } = this.state;
 
     return isLoading ? (
       "loading"
     ) : (
+      <>
+      <p>total: {numberOfTickets}</p>
       <ul style={{display: "inline"}}>
         {tickets.map((ticket) => (
           <li key={ticket.ticketId} style={{display: "block"}}>
@@ -68,6 +70,62 @@ class TicketList extends React.Component {
           </li>
         ))}
       </ul>
+      </>
+    );
+  }
+}
+
+class TicketListAssigned extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isLoading: true,
+      tickets: [],
+      userId: props.userId,
+      numberOfTickets: ""
+    };
+  }
+
+  async componentDidMount() {
+
+    const { userId } = this.state;
+    const res = await API.get(`/ticket/assigned/${userId}`);
+    const data = res.data;
+
+    this.setState({
+      ...this.state,
+      ...{
+        isLoading: false,
+        tickets: data,
+        numberOfTickets: data.length
+      },
+    });
+  }
+
+  render() {
+    const { tickets, isLoading, userId, numberOfTickets } = this.state;
+
+    return isLoading ? (
+      "loading"
+    ) : (
+      <>
+      <p>total: {numberOfTickets}</p>
+      <ul style={{display: "inline"}}>
+        {tickets.map((ticket) => (
+          <li key={ticket.ticketId} style={{display: "block"}}>
+          <Link to={`/tickets/${ticket.ticketId}`}>
+            <Ticket
+              userId={userId}
+              isLoading={isLoading}
+              id={ticket.ticketId}
+              title={ticket.title}
+            />
+            </Link>
+          </li>
+        ))}
+      </ul>
+      </>
     );
   }
 }
@@ -77,10 +135,10 @@ export default function Tickets(props) {
     <>
       {props.userId &&
       <>
-        <h1>My Tickets</h1>
+        <h1>My Issued Tickets</h1>
         <TicketList userId={ props.userId } />
-        <h1>Assigned Tickets</h1>
-        <p>to do...</p>
+        <h1>My Assigned Tickets</h1>
+        <TicketListAssigned userId={ props.userId } />
       </>
       }
       {props.userId == null &&
