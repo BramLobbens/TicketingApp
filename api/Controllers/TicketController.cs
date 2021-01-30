@@ -26,8 +26,6 @@ namespace api.Controllers
         public async Task<IEnumerable<TicketDto>> GetTickets()
         {
             return await _context.Tickets
-                .Include(t => t.Issuer)
-                .Include(t => t.Assignee)
                 .Select(t => new TicketDto()
                 {
                     TicketId = t.Id,
@@ -83,8 +81,6 @@ namespace api.Controllers
         public async Task<ActionResult<TicketDto>> GetTicket(int id)
         {
             var ticket = await _context.Tickets
-                // .Include(t => t.Issuer)
-                // .Include(t => t.Assignee)
                 .Select(t => new TicketDto()
                 {
                     TicketId = t.Id,
