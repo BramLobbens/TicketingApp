@@ -21,51 +21,78 @@ namespace api.Controllers
             _context = context;
         }
 
+        // Get all tickets
         [HttpGet]
         public async Task<IEnumerable<TicketDto>> GetTickets()
         {
             return await _context.Tickets
-                .Include(t => t.Person)
+                .Include(t => t.Issuer)
+                .Include(t => t.Assignee)
                 .Select(t => new TicketDto()
                 {
                     TicketId = t.Id,
                     Title = t.Title,
                     Content = t.Content,
                     PostedOn = t.PostedOn,
-                    PostedBy = t.Person.Name
+                    PostedBy = t.Issuer.Name,
+                    AssignedTo = t.Assignee.Name,
                 })
                 .ToListAsync();
         }
 
+        // Get ticket by issuer (issued by the user)
         [HttpGet("user/{id}")]
         public async Task<IEnumerable<TicketDto>> GetTicketsByUserId(int id)
         {
             return await _context.Tickets
-                .Include(t => t.Person)
-                .Where(t => t.Person.Id == id)
+                .Include(t => t.Issuer)
+                .Where(t => t.Issuer.Id == id)
                 .Select(t => new TicketDto()
                 {
                     TicketId = t.Id,
                     Title = t.Title,
                     Content = t.Content,
                     PostedOn = t.PostedOn,
-                    PostedBy = t.Person.Name
+                    PostedBy = t.Issuer.Name,
+                    AssignedTo = t.Assignee.Name
                 })
                 .ToListAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TicketDto>> GetTicket(int id)
+        // Get ticket by assignee (issued to the user)
+        [HttpGet("assigned/{id}")]
+        public async Task<IEnumerable<TicketDto>> GetTicketsByAssignedUserId(int id)
         {
-            var ticket = await _context.Tickets
-                .Include(t => t.Person)
+            return await _context.Tickets
+                .Include(t => t.Assignee)
+                .Where(t => t.Assignee.Id == id)
                 .Select(t => new TicketDto()
                 {
                     TicketId = t.Id,
                     Title = t.Title,
                     Content = t.Content,
                     PostedOn = t.PostedOn,
-                    PostedBy = t.Person.Name,
+                    PostedBy = t.Issuer.Name,
+                    AssignedTo = t.Assignee.Name
+                })
+                .ToListAsync();
+        }
+
+        // Get ticket by ticket id
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TicketDto>> GetTicket(int id)
+        {
+            var ticket = await _context.Tickets
+                // .Include(t => t.Issuer)
+                // .Include(t => t.Assignee)
+                .Select(t => new TicketDto()
+                {
+                    TicketId = t.Id,
+                    Title = t.Title,
+                    Content = t.Content,
+                    PostedOn = t.PostedOn,
+                    PostedBy = t.Issuer.Name,
+                    AssignedTo = t.Assignee.Name,
                     Replies = t.TicketReplies
                 })
                 .SingleOrDefaultAsync(t => t.TicketId == id);

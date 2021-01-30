@@ -84,14 +84,18 @@ namespace api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var person = await _context.Persons.FindAsync(id);
+            var user = await _userManager.FindByNameAsync(person.Name);
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                _context.Persons.Remove(person);
+                await _context.SaveChangesAsync();
+            }
 
             if (person is null)
             {
                 return NotFound();
             }
-
-            _context.Persons.Remove(person);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

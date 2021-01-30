@@ -28,7 +28,8 @@ namespace api.Models
                         .IsRequired()
                         .HasMaxLength(256); // Set max nvarchar to be performant on indexing
                     person.Ignore(p => p.Password); // Do not map password to Person table
-                    person.HasMany(p => p.Tickets);
+                    person.HasMany(p => p.IssuedTickets);
+                    person.HasMany(p => p.AssignedTickets);
                     person.HasMany(p => p.TicketReplies);
                     person.ToTable("Person"); // Conform to singular table name convention
                 }
@@ -42,9 +43,14 @@ namespace api.Models
                         .HasMaxLength(256); // Set max nvarchar to be performant on indexing
                     ticket.Property(t => t.PostedOn)
                         .IsRequired();
-                    ticket.HasOne(t => t.Person)
-                        .WithMany(p => p.Tickets)
-                        .HasForeignKey(t => t.PersonId);
+                    ticket.HasOne(t => t.Issuer)
+                        .WithMany(p => p.IssuedTickets)
+                        .HasForeignKey(t => t.PersonId)
+                        .OnDelete(DeleteBehavior.ClientCascade); // Set to ClientCascade due to EF migrations
+                    ticket.HasOne(t => t.Assignee)
+                        .WithMany(p => p.AssignedTickets)
+                        .HasForeignKey(t => t.AssigneeId)
+                        .OnDelete(DeleteBehavior.SetNull); // Allow ticket to persist upon deletion of assignee id
                     ticket.HasMany(t => t.TicketReplies);
                     ticket.ToTable("Ticket"); // Conform to singular table name convention
                 }
