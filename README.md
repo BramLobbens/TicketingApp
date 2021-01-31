@@ -3,6 +3,7 @@
 ## Progress
 ### `'api'` Features To-do list:
 - [x] Update ~~Patch~~ (edit: Put) api on ticket status change
+- [x] Revise password restrictions
 
 ### `'ticket-app'` Features To-do list:
 - [x] Ticket replies
@@ -13,6 +14,7 @@
 - [ ] ~~Update display of username if user deleted~~ &rarr; __*under revision*__
 - [ ] Update nav bar routing on user sign in
 - [ ] Update nav bar display on user sign in
+- [x] Display password validation check upon signup
 
 ## About
 
