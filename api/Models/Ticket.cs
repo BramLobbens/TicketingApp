@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace api.Models
 {
+    public enum Status
+    {
+        Open,
+        Closed
+    }
     public class Ticket
     {
         public int Id { get; set; }
@@ -13,6 +18,7 @@ namespace api.Models
         public DateTime PostedOn { get; set; }
         public Person Issuer { get; set; }
         public Person Assignee { get; set; }
+        public Status Status { get; set; }
         public ICollection<TicketReply> TicketReplies { get; set; }
     }
 }

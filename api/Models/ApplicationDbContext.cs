@@ -51,6 +51,8 @@ namespace api.Models
                         .WithMany(p => p.AssignedTickets)
                         .HasForeignKey(t => t.AssigneeId)
                         .OnDelete(DeleteBehavior.SetNull); // Allow ticket to persist upon deletion of assignee id
+                    ticket.Property(t => t.Status)
+                        .IsRequired();
                     ticket.HasMany(t => t.TicketReplies);
                     ticket.ToTable("Ticket"); // Conform to singular table name convention
                 }

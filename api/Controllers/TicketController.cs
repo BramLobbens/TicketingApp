@@ -6,6 +6,7 @@ using api.Models;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace api.Controllers
 {
@@ -34,6 +35,7 @@ namespace api.Controllers
                     PostedOn = t.PostedOn,
                     PostedBy = t.Issuer.Name,
                     AssignedTo = t.Assignee.Name,
+                    Status = Enum.GetName(t.Status)
                 })
                 .ToListAsync();
         }
@@ -52,7 +54,8 @@ namespace api.Controllers
                     Content = t.Content,
                     PostedOn = t.PostedOn,
                     PostedBy = t.Issuer.Name,
-                    AssignedTo = t.Assignee.Name
+                    AssignedTo = t.Assignee.Name,
+                    Status = Enum.GetName(t.Status)
                 })
                 .ToListAsync();
         }
@@ -71,7 +74,8 @@ namespace api.Controllers
                     Content = t.Content,
                     PostedOn = t.PostedOn,
                     PostedBy = t.Issuer.Name,
-                    AssignedTo = t.Assignee.Name
+                    AssignedTo = t.Assignee.Name,
+                    Status = Enum.GetName(t.Status)
                 })
                 .ToListAsync();
         }
@@ -89,7 +93,8 @@ namespace api.Controllers
                     PostedOn = t.PostedOn,
                     PostedBy = t.Issuer.Name,
                     AssignedTo = t.Assignee.Name,
-                    Replies = t.TicketReplies
+                    Replies = t.TicketReplies,
+                    Status = Enum.GetName(t.Status)
                 })
                 .SingleOrDefaultAsync(t => t.TicketId == id);
             if (ticket is null)
@@ -112,13 +117,14 @@ namespace api.Controllers
 
         [Authorize] // requires authentication
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Ticket ticket)
+        public async Task<IActionResult> Update(int id, Ticket update)
         {
+            var ticket = await _context.Tickets.FindAsync(id);
             if (id != ticket.Id)
             {
                 return BadRequest();
             }
-
+            ticket.Status = update.Status;
             _context.Entry(ticket).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 

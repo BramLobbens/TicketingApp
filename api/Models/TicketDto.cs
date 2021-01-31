@@ -11,6 +11,7 @@ namespace api.Models
         public DateTime PostedOn { get; set; }
         public string PostedBy { get; set; }
         public string AssignedTo { get; set; }
+        public string Status { get; set; }
         public ICollection<TicketReply> Replies { get; set; }
     }
 }
