@@ -57,6 +57,8 @@ class Form extends Component {
 
   render() {
     return (
+      <>
+      <hr/>
       <form onSubmit={this.handleSubmit}>
         <label htmlFor="content">Description</label>
         <textarea
@@ -68,6 +70,7 @@ class Form extends Component {
         />
         <button type="submit">Submit</button>
       </form>
+      </>
     );
   }
 }

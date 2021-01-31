@@ -17,7 +17,7 @@ class TicketList extends React.Component {
 
   async componentDidMount() {
 
-    const { userId, numberOfTickets } = this.state;
+    const { userId } = this.state;
 
     let ticketData
     if (userId) {
@@ -54,17 +54,23 @@ class TicketList extends React.Component {
             {userId &&
               <Ticket
                 userId={userId}
+                name={ticket.postedBy}
+                date={ticket.postedOn}
                 isLoading={isLoading}
                 id={ticket.ticketId}
                 title={ticket.title}
+                status={ticket.status}
               />
             }
             {!userId &&
               <Ticket
+                name={ticket.postedBy}
+                date={ticket.postedOn}
                 isLoading={isLoading}
                 id={ticket.ticketId}
                 title={ticket.title}
-                />
+                status={ticket.status}
+              />
             }
             </Link>
           </li>
@@ -117,9 +123,12 @@ class TicketListAssigned extends React.Component {
           <Link to={`/tickets/${ticket.ticketId}`}>
             <Ticket
               userId={userId}
+              name={ticket.postedBy}
+              date={ticket.postedOn}
               isLoading={isLoading}
               id={ticket.ticketId}
               title={ticket.title}
+              status={ticket.status}
             />
             </Link>
           </li>

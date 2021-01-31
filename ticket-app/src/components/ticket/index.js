@@ -6,23 +6,42 @@ import PropTypes from "prop-types";
 class TicketItem extends React.Component {
   render() {
 
-    const { id, name, title, content, isLoading } = this.props;
+    const { id, name, title, content, date, isLoading, status } = this.props;
 
+    const ticketHeaders = (
+      <div style={{display: "inline", padding: "20px"}}>
+        <p style={{display: "flex"}}>Ticket#{id} ({new Date(date).toLocaleDateString(navigator.language)})</p>
+        <p><i>Posted by: {name}</i></p>
+        <p>Status: {status}</p>
+        <hr/>
+      </div>
+    );
     const ticketDetails = (
       <div style={{display: "inline", padding: "20px"}}>
-        <p style={{display: "flex"}}>#{id}</p>
-        <h4 className="">{name}</h4>
-        <p style={{display: "flex"}}>{title}</p>
-        <span className="">{content}</span>
+        <p style={{display: "flex"}}>Ticket#{id}</p>
+        <p><i>Posted by: {name}</i></p>
+        <p><i>On: {new Date(date).toLocaleDateString(navigator.language)}</i></p>
+        <p style={{display: "flex"}}><i>Title: {title}</i></p>
+        <p>{content}</p>
+        <hr/>
       </div>
     );
 
     const loadingMessage = <span className="">Loading...</span>;
 
     return (
-      <div>
-        {isLoading ? loadingMessage : ticketDetails}
-      </div>
+      <>
+      {content ?
+        <div>
+          {isLoading ? loadingMessage : ticketDetails}
+        </div>
+      :
+        <div>
+          {isLoading ? loadingMessage : ticketHeaders}
+        </div>
+      }
+      </>
+
     );
   }
 }
@@ -32,7 +51,9 @@ TicketItem.propTypes = {
   name: PropTypes.string,
   title: PropTypes.string,
   content: PropTypes.string,
-  isLoading: PropTypes.bool
+  date: PropTypes.instanceOf(Date),
+  isLoading: PropTypes.bool,
+  status: PropTypes.string
 };
 
 export default function Ticket(props) {
@@ -43,7 +64,9 @@ export default function Ticket(props) {
         name={props.name}
         title={props.title}
         content={props.content}
+        date={props.date}
         isLoading={props.isLoading}
+        status={props.status}
       />
     </>
   );
