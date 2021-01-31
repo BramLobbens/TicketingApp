@@ -77,16 +77,23 @@ class Form extends Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label htmlFor="title">Subject</label>
-        <input
-          name="title"
-          type="text"
-          value={this.state.title}
-          autoComplete="false"
-          onChange={this.handleChange}
-          placeholder="Subject"
-        />
-        <label htmlFor="content">Description</label>
+        <div>
+          <label htmlFor="title">Subject:</label>
+        </div>
+        <div>
+          <input
+            name="title"
+            type="text"
+            value={this.state.title}
+            autoComplete="false"
+            onChange={this.handleChange}
+            placeholder="Subject"
+          />
+        </div>
+        <div>
+        <label htmlFor="content">Your message:</label>
+        </div>
+        <div>
         <textarea
           name="content"
           value={this.state.content}
@@ -94,6 +101,7 @@ class Form extends Component {
           onChange={this.handleChange}
           placeholder="Description"
         />
+        </div>
         <p>Assignee:</p>
         <Select
           options={this.state.assignees}

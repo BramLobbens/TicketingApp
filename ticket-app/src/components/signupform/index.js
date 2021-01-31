@@ -9,14 +9,37 @@ class Form extends Component {
       username: "",
       email: "",
       password: "",
+      passwordCheck: "",
+      passwordMatch: false,
+      passwordCheckMessage: "",
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.checkPassword = this.checkPassword.bind(this);
+  }
+
+  checkPassword(event) {
+    const { password, passwordCheck } = this.state;
+
+    if (password === "" && passwordCheck === "") {
+      this.setState({
+        passwordMatch: false,
+        passwordCheckMessage: ""});
+    }
+    else if ((password !== "" && passwordCheck !== "") && (password === passwordCheck)) {
+      this.setState({
+        passwordMatch: true,
+        passwordCheckMessage: "✓ Passwords match"});
+    }
+    else {
+      this.setState({passwordCheckMessage: "✖ Passwords are not matching"});
+    }
   }
 
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value });
+
   }
 
   handleSubmit(event) {
@@ -44,9 +67,12 @@ class Form extends Component {
   }
 
   render() {
+
+    const { passwordCheckMessage } = this.state;
+
     return (
       <form onSubmit={this.handleSubmit}>
-        <label htmlFor="username">Username<span style={{color:"red"}}>*</span></label>
+        <label htmlFor="username">Username</label>
         <input
           name="username"
           type="text"
@@ -55,7 +81,7 @@ class Form extends Component {
           onChange={this.handleChange}
           placeholder="Username"
         />
-        <label htmlFor="email">Email<span style={{color:"red"}}>*</span></label>
+        <label htmlFor="email">Email</label>
         <input
           name="email"
           type="email"
@@ -64,15 +90,29 @@ class Form extends Component {
           onChange={this.handleChange}
           placeholder="Email"
         />
-        <label htmlFor="password">Password<span style={{color:"red"}}>*</span></label>
-        <input
-          name="password"
-          type="password"
-          value={this.state.password}
-          autoComplete="false"
-          onChange={this.handleChange}
-          placeholder="Password"
-        />
+        <div>
+          <p>{passwordCheckMessage}</p>
+          <label htmlFor="password">Password</label>
+          <input
+            name="password"
+            type="password"
+            value={this.state.password}
+            autoComplete="false"
+            onChange={this.handleChange}
+            onKeyUp={this.checkPassword}
+            placeholder="Password"
+          />
+          <label htmlFor="password">Repeat Password</label>
+          <input
+            name="passwordCheck"
+            type="password"
+            value={this.state.passwordCheck}
+            autoComplete="false"
+            onChange={this.handleChange}
+            onKeyUp={this.checkPassword}
+            placeholder="Repeat Password"
+          />
+        </div>
         <button type="submit">Sign up</button>
       </form>
     );

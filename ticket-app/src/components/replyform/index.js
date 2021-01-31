@@ -59,15 +59,20 @@ class Form extends Component {
     return (
       <>
       <hr/>
+
       <form onSubmit={this.handleSubmit}>
-        <label htmlFor="content">Description</label>
-        <textarea
-          name="content"
-          value={this.state.content}
-          autoComplete="false"
-          onChange={this.handleChange}
-          placeholder="Description"
-        />
+        <div>
+          <label htmlFor="content">Send a reply:</label>
+        </div>
+        <div>
+          <textarea
+            name="content"
+            value={this.state.content}
+            autoComplete="false"
+            onChange={this.handleChange}
+            placeholder="Write message..."
+          />
+        </div>
         <button type="submit">Submit</button>
       </form>
       </>
