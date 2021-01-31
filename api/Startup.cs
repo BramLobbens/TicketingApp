@@ -32,7 +32,16 @@ namespace api
                 Configuration.GetConnectionString("LocalConnection")
             ));
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                    // Password settings.
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequiredUniqueChars = 0;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -58,20 +67,20 @@ namespace api
                 };
             });
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.None;
-            });
+            // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            // .AddCookie(options =>
+            // {
+            //     options.Cookie.HttpOnly = true;
+            //     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            //     options.Cookie.SameSite = SameSiteMode.None;
+            // });
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                options.HttpOnly = HttpOnlyPolicy.None;
-                options.Secure = CookieSecurePolicy.None;
-            });
+            // services.Configure<CookiePolicyOptions>(options =>
+            // {
+            //     options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+            //     options.HttpOnly = HttpOnlyPolicy.Always;
+            //     options.Secure = CookieSecurePolicy.Always;
+            // });
 
             services.AddCors(options =>
             {
