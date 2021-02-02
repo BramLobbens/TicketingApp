@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using api.Models;
 using Microsoft.AspNetCore.CookiePolicy;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace api
 {
@@ -43,7 +46,8 @@ namespace api
                     options.Password.RequiredUniqueChars = 0;
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddRoleManager<RoleManager<ApplicationRole>>();
 
             services.AddAuthentication(options =>
             {

@@ -15,12 +15,14 @@ namespace api.Controllers
     public class PersonController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ApplicationDbContext _context;
 
-        public PersonController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public PersonController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, RoleManager<ApplicationRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -34,6 +36,7 @@ namespace api.Controllers
         {
 
             var person = await _context.Persons.FindAsync(id);
+
             if (person is null)
             {
                 return NotFound();
@@ -45,16 +48,26 @@ namespace api.Controllers
         [HttpPost]
         public async Task<ActionResult<Person>> Register(Person person)
         {
+            var defaultRole = new ApplicationRole("Member");
             var user = new ApplicationUser
             {
                 UserName = person.Name,
-                Email = person.Email
+                Email = person.Email,
             };
+
             var result = await _userManager.CreateAsync(user, person.Password);
             if (result.Succeeded)
             {
+                await _roleManager.CreateAsync(defaultRole);
+                bool roleExists = await _roleManager.RoleExistsAsync("Member");
+                if (!roleExists)
+                {
+                    await _roleManager.CreateAsync(new ApplicationRole("Member"));
+                }
+                person.Role = "Member";
                 _context.Persons.Add(person);
                 await _context.SaveChangesAsync();
+                await _userManager.AddToRoleAsync(user, "Member");
 
                 return CreatedAtAction("GetPerson", new { person.Id }, person);
             }
