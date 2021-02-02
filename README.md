@@ -4,6 +4,7 @@
 ### `'api'` Features To-do list:
 - [x] Update ~~Patch~~ (edit: Put) api on ticket status change
 - [x] Revise password restrictions
+- [x] Add default 'Member' role
 
 ### `'ticket-app'` Features To-do list:
 - [x] Ticket replies
