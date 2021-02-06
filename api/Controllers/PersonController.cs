@@ -48,7 +48,7 @@ namespace api.Controllers
         [HttpPost]
         public async Task<ActionResult<Person>> Register(Person person)
         {
-            var defaultRole = new ApplicationRole("Member");
+            var defaultRole = await _roleManager.FindByNameAsync("Member") ?? new ApplicationRole("Member");
             var user = new ApplicationUser
             {
                 UserName = person.Name,
@@ -64,7 +64,7 @@ namespace api.Controllers
                 {
                     await _roleManager.CreateAsync(new ApplicationRole("Member"));
                 }
-                person.Role = "Member";
+
                 _context.Persons.Add(person);
                 await _context.SaveChangesAsync();
                 await _userManager.AddToRoleAsync(user, "Member");

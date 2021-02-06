@@ -13,9 +13,6 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using api.Models;
 using Microsoft.AspNetCore.CookiePolicy;
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace api
 {
@@ -71,20 +68,20 @@ namespace api
                 };
             });
 
-            // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            // .AddCookie(options =>
-            // {
-            //     options.Cookie.HttpOnly = true;
-            //     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            //     options.Cookie.SameSite = SameSiteMode.None;
-            // });
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.None;
+            });
 
-            // services.Configure<CookiePolicyOptions>(options =>
-            // {
-            //     options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-            //     options.HttpOnly = HttpOnlyPolicy.Always;
-            //     options.Secure = CookieSecurePolicy.Always;
-            // });
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                options.HttpOnly = HttpOnlyPolicy.Always;
+                options.Secure = CookieSecurePolicy.Always;
+            });
 
             services.AddCors(options =>
             {
@@ -123,6 +120,13 @@ namespace api
             app.UseRouting();
 
             app.UseCookiePolicy();
+
+            app.Use(async (context, next) =>
+            {
+                var token = context.Request.Cookies["access_token"];
+                if (!string.IsNullOrEmpty(token)) context.Request.Headers.Add("Authorization", "Bearer " + token);
+                await next();
+            });
 
             app.UseAuthentication();
 
