@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import {} from "./styles/signupform";
-import * as API from "../../constants/api";
+import api from "../../utils/api";
+import * as ROUTES from "../../constants/routes";
+import { Redirect } from "react-router-dom";
 
 class Form extends Component {
   constructor(props) {
@@ -12,6 +14,9 @@ class Form extends Component {
       passwordCheck: "",
       passwordMatch: false,
       passwordCheckMessage: "",
+      sent: false,
+      success: false,
+      redirectMessage: "",
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -30,10 +35,10 @@ class Form extends Component {
     else if ((password !== "" && passwordCheck !== "") && (password === passwordCheck)) {
       this.setState({
         passwordMatch: true,
-        passwordCheckMessage: "✓ Passwords match"});
+        passwordCheckMessage: "👍 Passwords match"});
     }
     else {
-      this.setState({passwordCheckMessage: "✖ Passwords are not matching"});
+      this.setState({passwordCheckMessage: "😦 Passwords are not matching"});
     }
   }
 
@@ -42,35 +47,45 @@ class Form extends Component {
 
   }
 
-  handleSubmit(event) {
-    const url = API.SIGNUP;
-
-    const signup = {
-      name: this.state.username,
-      email: this.state.email,
-      password: this.state.password,
-    };
-
-    const request = new Request(url, {
-      method: "POST",
-      body: JSON.stringify(signup),
-      headers: new Headers({
-        "Content-Type": "application/json",
-      }),
-    });
-
-    fetch(request)
-      .then((res) => res.json())
-      .then((res) => console.log(res));
-
+  async handleSubmit(event) {
     event.preventDefault();
+
+    const { username: name, email, password } = this.state;
+
+    try {
+      const res = await api.post('/person', {
+        name: name, email: email, password: password
+      });
+      this.setState({success: (res.status === 200 || res.status === 201) });
+      this.setState({redirectMessage: "Sign in succesful. Redirecting..."});
+      setTimeout(() => this.setState({success: true}), 2000);
+      const data = res.data;
+    }
+    catch(e) {
+      this.setState({success: false});
+    }
+    this.setState({sent: true});
   }
 
   render() {
 
-    const { passwordCheckMessage } = this.state;
+    const { passwordCheckMessage, sent, success, redirectMessage } = this.state;
+
+    if (success) {
+      return (
+          <Redirect to={ROUTES.SIGN_IN} />
+      );
+    }
 
     return (
+      <>
+      <p>{redirectMessage}</p>
+      {sent ?
+        success
+        ? <p>Sign in successful. Redirecting...</p>
+        : <p>Something went wrong, please try again.</p>
+      : <p></p>
+      }
       <form onSubmit={this.handleSubmit}>
         <label htmlFor="username">Username</label>
         <input
@@ -115,6 +130,7 @@ class Form extends Component {
         </div>
         <button type="submit">Sign up</button>
       </form>
+      </>
     );
   }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {} from "./styles/replyform";
-import API from "../../utils/api";
+import api from "../../utils/api";
 import { useParams } from "react-router-dom";
 
 class Form extends Component {
@@ -9,6 +9,8 @@ class Form extends Component {
     this.state = {
       title: "",
       content: "",
+      sent: false,
+      success: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -20,48 +22,46 @@ class Form extends Component {
   }
 
   async handleSubmit(event) {
-    try {
-        // const response = await API.post('/ticket/reply',
-        // {
-        //     personId: 1, // temp for testing
-        //     ticketId: 14, //this.props.id,
-        //     content: "test", //this.state.content,
-        //     postedOn: new Date(),
-        // });
-        // console.log(response)
-
-        const reply = {
-            personId: localStorage.getItem('userId'),
-            ticketId: this.props.id,
-            content: this.state.content,
-            postedOn: new Date(),
-          };
-
-          const request = new Request('https://localhost:5001/api/ticket/reply', {
-            method: "POST",
-            body: JSON.stringify(reply),
-            headers: new Headers({
-              "Content-Type": "application/json",
-            }),
-          });
-
-          fetch(request)
-            .then((res) => res.json())
-            .then((res) => console.log(res));
-    } catch (e) {
-        console.log(e);
-    }
 
     event.preventDefault();
+
+    const { content } = this.state;
+    const personId = localStorage.getItem('userId');
+    const ticketId = this.props.id;
+    const postedOn = new Date();
+
+    try {
+      const res = await api.post('/ticket/reply',
+        {
+          personId,
+          ticketId,
+          content,
+          postedOn,
+        });
+        console.log(res);
+        this.setState({success: res.status === 201});
+    } catch (e) {
+        console.log(e);
+        this.setState({success: false});
+    }
+    this.setState({sent: true});
   }
 
   render() {
+    const { sent, success } = this.state;
+
     return (
       <>
       <hr/>
 
       <form onSubmit={this.handleSubmit}>
         <div>
+        {sent ?
+          success
+          ? <p>Reply sent succesfully</p>
+          : <p>Something went wrong, please try again.</p>
+        : <p></p>
+        }
           <label htmlFor="content">Send a reply:</label>
         </div>
         <div>

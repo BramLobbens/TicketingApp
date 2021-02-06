@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import Select from "react-select";
 import {} from "./styles/ticketform";
-import * as API from "../../constants/api";
 import api from "../../utils/api";
 
 class Form extends Component {
@@ -13,6 +12,8 @@ class Form extends Component {
       assignees: [],
       id: "", // assignee
       name: "", // assignee
+      sent: false,
+      success: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,14 +26,20 @@ class Form extends Component {
   }
 
   async getAssignees() {
-    const res = await api.get('person');
-    const data = res.data;
+    try {
+      const res = await api.get('person');
+      const data = res.data;
 
-    const options = data.map(d => ({
-      "value" : d.id,
-      "label" : d.name
-    }))
-    this.setState({assignees: options})
+      const options = data.map(d => ({
+        "value" : d.id,
+        "label" : d.name
+      }));
+
+      this.setState({assignees: options});
+    }
+    catch(e) {
+    }
+
   }
 
   handleChange(event) {
@@ -43,10 +50,11 @@ class Form extends Component {
     this.setState({id:event.value, name:event.label});
   }
 
-  handleSubmit(event) {
-    const { id, title, content } = this.state;
+  async handleSubmit(event) {
 
-    const url = API.TICKET;
+    event.preventDefault();
+
+    const { id, title, content } = this.state;
 
     const ticket = {
       personId: localStorage.getItem('userId'),
@@ -56,26 +64,22 @@ class Form extends Component {
       postedOn: new Date(),
     };
 
-    const request = new Request(url, {
-      method: "POST",
-      body: JSON.stringify(ticket),
-      headers: new Headers({
-        "Content-Type": "application/json",
-        "Authorization": 'Bearer ' + localStorage.getItem('jwt'),
-      }),
-    });
-
-    fetch(request, {
-      //credentials: "include"
-    })
-      .then((res) => res.json())
-      .then((res) => console.log(res));
-
-    event.preventDefault();
+    try {
+        const res = await api.post('/ticket', ticket);
+        const data = res.data;
+        this.setState({success: true});
+    }
+    catch (e) {
+      console.log(e);
+    }
+    this.setState({sent: true});
   }
 
   render() {
+    const { success, sent } = this.state;
+
     return (
+      <>
       <form onSubmit={this.handleSubmit}>
         <div>
           <label htmlFor="title">Subject:</label>
@@ -109,6 +113,15 @@ class Form extends Component {
         />
         <button type="submit">Submit</button>
       </form>
+      <div>
+      {sent ?
+        success
+        ? <p>Ticket created</p>
+        : <p>Something went wrong, please try again.</p>
+      : <p></p>
+      }
+      </div>
+      </>
     );
   }
 }

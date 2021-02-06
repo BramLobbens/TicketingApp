@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {} from "./styles/signinform";
-import axios from "axios";
+import api from "../../utils/api";
 
 class Form extends Component {
   constructor(props) {
@@ -8,6 +8,8 @@ class Form extends Component {
     this.state = {
       username: "",
       password: "",
+      sent: false,
+      success: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -24,28 +26,31 @@ class Form extends Component {
     const { username: name, password } = this.state;
 
     try {
-      const res = await axios({
-        method: 'POST',
-        url: 'https://localhost:5001/api/signin',
-        data: {
-          name,
-          password,
-        }
-      })
-      console.log(res);
+      const res = await api.post('/signin', { name: name, password: password });
+      this.setState({success: res.status === 200});
 
       const data = res.data;
-      localStorage.setItem('jwt', data.token);
       localStorage.setItem('userId', data.userId);
       localStorage.setItem('userName', data.userName);
     }
     catch (err) {
       console.log(err);
+      this.setState({success: false});
     }
+    this.setState({sent: true});
   }
 
   render() {
+    const { sent, success } = this.state;
+
     return (
+      <>
+      {sent ?
+        success
+        ? <p>Sign in successful</p>
+        : <p>Something went wrong, please try again.</p>
+      : <p></p>
+      }
       <form onSubmit={this.handleSubmit}>
         <label htmlFor="username">Username</label>
         <input
@@ -67,6 +72,7 @@ class Form extends Component {
         />
         <button type="submit">Sign in</button>
       </form>
+      </>
     );
   }
 }
