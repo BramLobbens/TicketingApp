@@ -5,6 +5,7 @@
 - [x] Update ~~Patch~~ (edit: Put) api on ticket status change
 - [x] Revise password restrictions
 - [x] Add default 'Member' role
+- [x] Change implementation of Authorization via HttpOnly Cookie
 
 ### `'ticket-app'` Features To-do list:
 - [x] Ticket replies
@@ -16,6 +17,7 @@
 - [ ] Update nav bar routing on user sign in
 - [ ] Update nav bar display on user sign in
 - [x] Display password validation check upon signup
+- [x] Show relevant error/succes messages to user
 
 ## About
 
