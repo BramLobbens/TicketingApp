@@ -14,7 +14,7 @@ using System.Linq;
 namespace api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/signin")]
+
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
@@ -29,6 +29,7 @@ namespace api.Controllers
             _context = context;
         }
 
+        [Route("api/signin")]
         [HttpPost]
         public async Task<ActionResult> Signin(Person person)
         {
@@ -64,6 +65,18 @@ namespace api.Controllers
                 });
             }
             return Unauthorized();
+        }
+
+        [Route("api/signout")]
+        [HttpGet]
+        public ActionResult Signout()
+        {
+            if (Request.Cookies.ContainsKey("access_token"))
+            {
+                Response.Cookies.Delete("access_token");
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }
