@@ -9,29 +9,9 @@ import {
   CreateTicket,
   Signin,
   Signup,
+  Signout,
 } from "./pages";
 import { Footer } from "./components";
-
-// class User extends Component {
-//   state = {
-//     user: null,
-//   }
-
-//   render() {
-//     const { user } = this.state;
-
-//     return (
-//       <div>
-//         {!user &&
-//           <p>not logged in</p>
-//         }
-//         {user &&
-//           <p>logged in</p>
-//         }
-//       </div>
-//     );
-//   }
-// }
 
 export default function App() {
 
@@ -39,7 +19,6 @@ export default function App() {
 
   return (
     <>
-      {/* <User/> */}
       <Router>
         <Navbar bg="light" expand="lg">
           <Navbar.Brand href={ROUTES.HOME}>Ticketing App</Navbar.Brand>
@@ -59,7 +38,7 @@ export default function App() {
                   Create ticket
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="#">
+                <NavDropdown.Item href={ROUTES.SIGN_OUT}>
                   Sign out
                 </NavDropdown.Item>
               </NavDropdown>
@@ -102,26 +81,18 @@ export default function App() {
               <Signup />
             </Route>
             <Route exact path={ROUTES.SIGN_IN} component={Signin}>
-              {/* <Signin updateUser={(user) => this.setState({user})} /> */}
               <Signin />
             </Route>
-            {/*
-          Show created and assigned tickets upon signin
-        */}
-            {/* <Route exact path={} component={}>
-          <MyTickets />
-        </Route> */}
-            {/* <Route exact path="/auth/sign-up"
-        render={() => (currentUser ? <Redirect to="/" /> : <SignUp />)}
-      /> */}
+            <Route exact path={ROUTES.SIGN_OUT}>
+              <Signout />
+            </Route>
           </Switch>
         </div>
         <Footer>
           <p>Bram Lobbens (2020)</p>
-          <Link to="https://github.com/BramLobbens/TicketingApp/"><p>Github</p></Link>
+          <a href="https://github.com/BramLobbens/TicketingApp/" target="_blank" rel="noopener noreferrer">View on Github</a>
         </Footer>
       </Router>
-
     </>
   );
 }

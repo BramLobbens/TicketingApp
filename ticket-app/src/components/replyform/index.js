@@ -1,9 +1,11 @@
-import React, { Component } from "react";
+import React, { Component, useState, Location } from "react";
 import {} from "./styles/replyform";
 import api from "../../utils/api";
 import { useParams } from "react-router-dom";
+import { Form, Alert, Button } from "react-bootstrap";
 
-class Form extends Component {
+
+class Form_ extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,6 +13,8 @@ class Form extends Component {
       content: "",
       sent: false,
       success: false,
+      message: "",
+      variant: "",
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -26,55 +30,70 @@ class Form extends Component {
     event.preventDefault();
 
     const { content } = this.state;
+
+    if (content === "") {
+      this.setState({
+        success: false,
+        message: "Message may not be empty.",
+        variant: "primary"
+      });
+  }
+
     const personId = localStorage.getItem('userId');
     const ticketId = this.props.id;
     const postedOn = new Date();
 
-    try {
-      const res = await api.post('/ticket/reply',
-        {
-          personId,
-          ticketId,
-          content,
-          postedOn,
+    {content &&
+    await api.post('/ticket/reply',
+      {
+        personId,
+        ticketId,
+        content,
+        postedOn,
+      })
+      .then((res) => {
+        this.setState({
+          success: res.status === 201,
+          message: "Reply sent succesfully.",
+          variant: "success"
         });
-        console.log(res);
-        this.setState({success: res.status === 201});
-    } catch (e) {
-        console.log(e);
-        this.setState({success: false});
+      })
+      .catch((error) => {
+        this.setState({
+          success: false,
+          message: "Something went wrong.",
+          variant: "warning"
+        });
+      });
+      setTimeout(() => this.setState({sent: true}), 2000);
     }
-    this.setState({sent: true});
   }
 
   render() {
-    const { sent, success } = this.state;
+    const { sent, success, message, variant } = this.state;
 
     return (
       <>
       <hr/>
-
-      <form onSubmit={this.handleSubmit}>
-        <div>
-        {sent ?
-          success
-          ? <p>Reply sent succesfully</p>
-          : <p>Something went wrong, please try again.</p>
-        : <p></p>
-        }
-          <label htmlFor="content">Send a reply:</label>
-        </div>
-        <div>
-          <textarea
+      {message !== "" &&
+        <Alert variant={variant}>{message}</Alert>
+      }
+      <Form onSubmit={this.handleSubmit}>
+        <Form.Group>
+        <Form.Label htmlFor="content">
+        <h2>💬 Post a reply</h2>
+        </Form.Label>
+        <Form.Control as="textarea" rows={5}
             name="content"
             value={this.state.content}
             autoComplete="false"
             onChange={this.handleChange}
             placeholder="Write message..."
           />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
+          </Form.Group>
+        <Button type="submit">Post Reply</Button>
+      </Form>
+      <hr/>
       </>
     );
   }
@@ -82,5 +101,5 @@ class Form extends Component {
 
 export default function ReplyForm(props) {
     const { id } = useParams();
-  return <Form id={id} />;
+  return <Form_ id={id} />;
 }

@@ -3,7 +3,7 @@ import { Ticket, ReplyForm } from "../components";
 import api from "../utils/api";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { Form, Button, Card } from "react-bootstrap";
+import { Form, Button, Card, Accordion } from "react-bootstrap";
 
 class TicketItem extends React.Component {
   constructor(props) {
@@ -74,21 +74,33 @@ class TicketItem extends React.Component {
     );
     console.log(replies);
     const ticketReplies = (
-        <div>
+        <Accordion defaultActiveKey="0">
             <ul>
+            <Accordion.Toggle as={Button} variant="link" eventKey="0">
+            <div>
+              <p>Replies ▼</p>
+            </div>
+            </Accordion.Toggle>
                 {replies.map((reply) => (
                 <li key={reply.Id}>
-                  <Card>
-                    {/* <p>{reply.postedBy}</p> */}
-                    <p><i>Posted by: user id#{reply.personId}</i></p>
-                    <p><i>On: {new Date(reply.postedOn).toLocaleDateString(navigator.language)}</i></p>
-                    <p>{reply.content}</p>
-                  </Card>
+                <Accordion.Collapse eventKey="0">
+                <div className="reply-container">
 
+                  <Card.Header>
+                  <Card.Title>
+                    <div className="avatar">#{reply.personId}</div>
+                    </Card.Title>
+                    <Card.Subtitle>Posted by: user id#{reply.personId} On {new Date(reply.postedOn).toLocaleDateString(navigator.language)}</Card.Subtitle>
+                  </Card.Header>
+                  <Card.Body>
+                    <Card.Text>{reply.content}</Card.Text>
+                  </Card.Body>
+                  </div>
+                  </Accordion.Collapse>
                 </li>
                 ))}
             </ul>
-        </div>
+        </Accordion>
     );
     return (
         <>
@@ -97,10 +109,12 @@ class TicketItem extends React.Component {
             </div>
             {ticketReplies}
             {status.toLowerCase() === "open" &&
+            <div id="#reply-form">
               <ReplyForm />
+            </div>
             }
             {status.toLowerCase() === "open" && (localStorage.getItem("userName") === ticket.postedBy) &&
-              <button type="submit" onClick={this.handleClick}>Mark as closed</button>
+              <Button variant="warning" type="submit" onClick={this.handleClick}>Close ticket</Button>
             }
             {status.toLowerCase() === "closed" &&
               <p>Marked as closed</p>
