@@ -48,7 +48,6 @@ namespace api.Controllers
         [HttpPost]
         public async Task<ActionResult<Person>> Register(Person person)
         {
-            var defaultRole = await _roleManager.FindByNameAsync("Member") ?? new ApplicationRole("Member");
             var user = new ApplicationUser
             {
                 UserName = person.Name,
@@ -58,7 +57,6 @@ namespace api.Controllers
             var result = await _userManager.CreateAsync(user, person.Password);
             if (result.Succeeded)
             {
-                await _roleManager.CreateAsync(defaultRole);
                 bool roleExists = await _roleManager.RoleExistsAsync("Member");
                 if (!roleExists)
                 {
@@ -71,7 +69,7 @@ namespace api.Controllers
 
                 return CreatedAtAction("GetPerson", new { person.Id }, person);
             }
-            return BadRequest();
+            return BadRequest(result);
         }
 
         [Authorize]
