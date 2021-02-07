@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import Select from "react-select";
 import {} from "./styles/ticketform";
 import api from "../../utils/api";
+import { Form, Button, Alert } from "react-bootstrap";
 
-class Form extends Component {
+export default class TicketForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -80,52 +81,44 @@ class Form extends Component {
 
     return (
       <>
-      <form onSubmit={this.handleSubmit}>
-        <div>
-          <label htmlFor="title">Subject:</label>
-        </div>
-        <div>
-          <input
+      <Form onSubmit={this.handleSubmit}>
+      <Form.Group>
+        <Form.Label htmlFor="title">Subject</Form.Label>
+        <Form.Control
             name="title"
             type="text"
             value={this.state.title}
             autoComplete="false"
             onChange={this.handleChange}
             placeholder="Subject"
-          />
-        </div>
-        <div>
-        <label htmlFor="content">Your message:</label>
-        </div>
-        <div>
-        <textarea
+        />
+        <Form.Label htmlFor="content">Text</Form.Label>
+        <Form.Control as="textarea" rows={5}
           name="content"
           value={this.state.content}
           autoComplete="false"
           onChange={this.handleChange}
           placeholder="Description"
         />
-        </div>
-        <p>Assignee:</p>
+      </Form.Group>
+      <Form.Group>
+        <Form.Label htmlFor="title">Assign ticket to</Form.Label>
         <Select
-          options={this.state.assignees}
-          onChange={this.handleSelectionChange}
-        />
-        <button type="submit">Submit</button>
-      </form>
+            options={this.state.assignees}
+            onChange={this.handleSelectionChange}
+          />
+      </Form.Group>
+        <Button type="submit">Submit</Button>
+      </Form>
       <div>
       {sent ?
         success
-        ? <p>Ticket created</p>
-        : <p>Something went wrong, please try again.</p>
+        ? <Alert variant='success'>Ticket created</Alert>
+        : <Alert variant='warning'>Something went wrong, please try again.</Alert>
       : <p></p>
       }
       </div>
       </>
     );
   }
-}
-
-export default function TicketForm(props) {
-  return <Form />;
 }

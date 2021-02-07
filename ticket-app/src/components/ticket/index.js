@@ -1,37 +1,46 @@
 import React from "react";
 import {} from "./styles/ticket";
-
+import { Card, Badge } from 'react-bootstrap';
 import PropTypes from "prop-types";
 
 class TicketItem extends React.Component {
   render() {
 
-    const { id, name, title, content, date, isLoading, status } = this.props;
+    const { id, name, title, content, date, isLoading, status, header } = this.props;
 
     const ticketHeaders = (
-      <div style={{display: "inline", padding: "20px"}}>
+      <>
+      <Card.Body>
+          <p class="p-header">{id}. {title}</p> <span class style={{float: 'right'}}>{new Date(date).toLocaleDateString(navigator.language)} <Badge variant={status === "Open" ? 'success' : 'secondary'}>{status}</Badge></span>
+      </Card.Body>
+      <Card.Body>
+        <p class="p-header">{content}</p>
+      </Card.Body>
+      {/* <div style={{display: "inline", padding: "20px"}}>
         <p style={{display: "flex"}}>Ticket#{id} ({new Date(date).toLocaleDateString(navigator.language)})</p>
         <p><i>Posted by: {name}</i></p>
         <p>Status: {status}</p>
         <hr/>
-      </div>
+      </div> */}
+      </>
     );
     const ticketDetails = (
-      <div style={{display: "inline", padding: "20px"}}>
-        <p style={{display: "flex"}}>Ticket#{id}</p>
-        <p><i>Posted by: {name}</i></p>
-        <p><i>On: {new Date(date).toLocaleDateString(navigator.language)}</i></p>
-        <p style={{display: "flex"}}><i>Title: {title}</i></p>
-        <p>{content}</p>
-        <hr/>
-      </div>
+      <>
+      <Card.Body>
+        <Card.Title>{title}</Card.Title>
+        <Card.Subtitle>Posted by: <Card.Link href="#">{name}</Card.Link> on {new Date(date).toLocaleDateString(navigator.language)}</Card.Subtitle>
+        <Card.Text>{content}</Card.Text>
+      </Card.Body>
+      <Card.Footer>Status: {status}</Card.Footer>
+      </>
     );
 
     const loadingMessage = <span className="">Loading...</span>;
 
     return (
       <>
-      {content ?
+      {/* {content ? */}
+      {!header ?
         <div>
           {isLoading ? loadingMessage : ticketDetails}
         </div>
@@ -53,7 +62,8 @@ TicketItem.propTypes = {
   content: PropTypes.string,
   date: PropTypes.instanceOf(Date),
   isLoading: PropTypes.bool,
-  status: PropTypes.string
+  status: PropTypes.string,
+  header: PropTypes.bool
 };
 
 export default function Ticket(props) {
@@ -67,6 +77,7 @@ export default function Ticket(props) {
         date={props.date}
         isLoading={props.isLoading}
         status={props.status}
+        header={props.header}
       />
     </>
   );

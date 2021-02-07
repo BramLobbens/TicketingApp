@@ -1,7 +1,8 @@
 import React from "react";
 import { Ticket } from "../components";
-import API from "../utils/api";
+import api from "../utils/api";
 import { Link } from "react-router-dom";
+import { Accordion, Card, Button } from "react-bootstrap";
 
 class TicketList extends React.Component {
   constructor(props) {
@@ -11,20 +12,18 @@ class TicketList extends React.Component {
       isLoading: true,
       tickets: [],
       userId: props.userId,
-      numberOfTickets: ""
+      numberOfTickets: "",
     };
   }
 
   async componentDidMount() {
-
     const { userId } = this.state;
 
-    let ticketData
+    let ticketData;
     if (userId) {
-      ticketData = await API.get(`/ticket/user/${userId}`);
-    }
-    else {
-      ticketData = await API.get("/ticket");
+      ticketData = await api.get(`/ticket/user/${userId}`);
+    } else {
+      ticketData = await api.get("/ticket");
     }
 
     ticketData = ticketData.data;
@@ -34,7 +33,7 @@ class TicketList extends React.Component {
       ...{
         isLoading: false,
         tickets: ticketData,
-        numberOfTickets: ticketData.length
+        numberOfTickets: ticketData.length,
       },
     });
   }
@@ -46,36 +45,40 @@ class TicketList extends React.Component {
       "loading"
     ) : (
       <>
-      <p>total: {numberOfTickets}</p>
-      <ul style={{display: "inline"}}>
-        {tickets.map((ticket) => (
-          <li key={ticket.ticketId} style={{display: "block"}}>
-            <Link to={`/tickets/${ticket.ticketId}`}>
-            {userId &&
-              <Ticket
-                userId={userId}
-                name={ticket.postedBy}
-                date={ticket.postedOn}
-                isLoading={isLoading}
-                id={ticket.ticketId}
-                title={ticket.title}
-                status={ticket.status}
-              />
-            }
-            {!userId &&
-              <Ticket
-                name={ticket.postedBy}
-                date={ticket.postedOn}
-                isLoading={isLoading}
-                id={ticket.ticketId}
-                title={ticket.title}
-                status={ticket.status}
-              />
-            }
-            </Link>
-          </li>
-        ))}
-      </ul>
+        <p>total: {numberOfTickets}</p>
+        <ul style={{ display: "inline" }}>
+          {tickets.map((ticket) => (
+            <li key={ticket.ticketId} style={{ display: "block" }}>
+              <Link to={`/tickets/${ticket.ticketId}`}>
+                {userId && (
+                  <Ticket
+                    userId={userId}
+                    name={ticket.postedBy}
+                    date={ticket.postedOn}
+                    isLoading={isLoading}
+                    id={ticket.ticketId}
+                    title={ticket.title}
+                    status={ticket.status}
+                    content={ticket.content}
+                    header={true}
+                  />
+                )}
+                {!userId && (
+                  <Ticket
+                    name={ticket.postedBy}
+                    date={ticket.postedOn}
+                    isLoading={isLoading}
+                    id={ticket.ticketId}
+                    title={ticket.title}
+                    status={ticket.status}
+                    content={ticket.content}
+                    header={true}
+                  />
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </>
     );
   }
@@ -89,14 +92,13 @@ class TicketListAssigned extends React.Component {
       isLoading: true,
       tickets: [],
       userId: props.userId,
-      numberOfTickets: ""
+      numberOfTickets: "",
     };
   }
 
   async componentDidMount() {
-
     const { userId } = this.state;
-    const res = await API.get(`/ticket/assigned/${userId}`);
+    const res = await api.get(`/ticket/assigned/${userId}`);
     const data = res.data;
 
     this.setState({
@@ -104,7 +106,7 @@ class TicketListAssigned extends React.Component {
       ...{
         isLoading: false,
         tickets: data,
-        numberOfTickets: data.length
+        numberOfTickets: data.length,
       },
     });
   }
@@ -116,24 +118,24 @@ class TicketListAssigned extends React.Component {
       "loading"
     ) : (
       <>
-      <p>total: {numberOfTickets}</p>
-      <ul style={{display: "inline"}}>
-        {tickets.map((ticket) => (
-          <li key={ticket.ticketId} style={{display: "block"}}>
-          <Link to={`/tickets/${ticket.ticketId}`}>
-            <Ticket
-              userId={userId}
-              name={ticket.postedBy}
-              date={ticket.postedOn}
-              isLoading={isLoading}
-              id={ticket.ticketId}
-              title={ticket.title}
-              status={ticket.status}
-            />
-            </Link>
-          </li>
-        ))}
-      </ul>
+        <p>total: {numberOfTickets}</p>
+        <ul style={{ display: "inline" }}>
+          {tickets.map((ticket) => (
+            <li key={ticket.ticketId} style={{ display: "block" }}>
+              <Link to={`/tickets/${ticket.ticketId}`}>
+                <Ticket
+                  userId={userId}
+                  name={ticket.postedBy}
+                  date={ticket.postedOn}
+                  isLoading={isLoading}
+                  id={ticket.ticketId}
+                  title={ticket.title}
+                  status={ticket.status}
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </>
     );
   }
@@ -142,20 +144,42 @@ class TicketListAssigned extends React.Component {
 export default function Tickets(props) {
   return (
     <>
-      {props.userId &&
-      <>
-        <h1>My Issued Tickets</h1>
-        <TicketList userId={ props.userId } />
-        <h1>My Assigned Tickets</h1>
-        <TicketListAssigned userId={ props.userId } />
-      </>
-      }
-      {props.userId == null &&
-      <>
-        <h1>Tickets</h1>
-        <TicketList />
-      </>
-      }
+      {props.userId && (
+        <>
+          <Accordion defaultActiveKey="1">
+            <Card>
+              <Card.Header>
+                <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                  <h1>My Issued Tickets</h1>
+                </Accordion.Toggle>
+              </Card.Header>
+              <Accordion.Collapse eventKey="0">
+                <Card.Body>
+                  <TicketList userId={props.userId} />
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
+            <Card>
+              <Card.Header>
+                <Accordion.Toggle as={Button} variant="link" eventKey="1">
+                  <h1>My Assigned Tickets</h1>
+                </Accordion.Toggle>
+              </Card.Header>
+              <Accordion.Collapse eventKey="1">
+                <Card.Body>
+                  <TicketListAssigned userId={props.userId} />
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
+          </Accordion>
+        </>
+      )}
+      {props.userId == null && (
+        <>
+          <h1>Tickets</h1>
+          <TicketList />
+        </>
+      )}
     </>
   );
 }

@@ -3,8 +3,9 @@ import {} from "./styles/signupform";
 import api from "../../utils/api";
 import * as ROUTES from "../../constants/routes";
 import { Redirect } from "react-router-dom";
+import { Form, Button, Alert, Col } from 'react-bootstrap';
 
-class Form extends Component {
+export default class SignupForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,6 +18,7 @@ class Form extends Component {
       sent: false,
       success: false,
       redirectMessage: "",
+      variant: "",
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -35,10 +37,14 @@ class Form extends Component {
     else if ((password !== "" && passwordCheck !== "") && (password === passwordCheck)) {
       this.setState({
         passwordMatch: true,
-        passwordCheckMessage: "👍 Passwords match"});
+        passwordCheckMessage: "👍 Passwords match",
+        variant: 'info'});
     }
     else {
-      this.setState({passwordCheckMessage: "😦 Passwords are not matching"});
+      this.setState({
+        passwordCheckMessage: "😦 Passwords are not matching",
+        variant: 'danger'
+      });
     }
   }
 
@@ -69,7 +75,7 @@ class Form extends Component {
 
   render() {
 
-    const { passwordCheckMessage, sent, success, redirectMessage } = this.state;
+    const { passwordCheckMessage, sent, success, redirectMessage, variant } = this.state;
 
     if (success) {
       return (
@@ -79,62 +85,75 @@ class Form extends Component {
 
     return (
       <>
-      <p>{redirectMessage}</p>
+      <Alert variant='light'>{redirectMessage}</Alert>
       {sent ?
         success
-        ? <p>Sign in successful. Redirecting...</p>
-        : <p>Something went wrong, please try again.</p>
+        ? <Alert>Sign in successful. Redirecting...</Alert>
+        : <Alert variant='warning'>Something went wrong, please try again.</Alert>
       : <p></p>
       }
-      <form onSubmit={this.handleSubmit}>
-        <label htmlFor="username">Username</label>
-        <input
-          name="username"
-          type="text"
-          value={this.state.username}
-          autoComplete="false"
-          onChange={this.handleChange}
-          placeholder="Username"
-        />
-        <label htmlFor="email">Email</label>
-        <input
-          name="email"
-          type="email"
-          value={this.state.email}
-          autoComplete="false"
-          onChange={this.handleChange}
-          placeholder="Email"
-        />
-        <div>
-          <p>{passwordCheckMessage}</p>
-          <label htmlFor="password">Password</label>
-          <input
-            name="password"
+      <Form onSubmit={this.handleSubmit}>
+      <Form.Row>
+        <Form.Group as={Col}>
+          <Form.Label htmlFor="username">Username</Form.Label>
+          <Form.Control
+              name="username"
+              type="text"
+              value={this.state.username}
+              autoComplete="false"
+              onChange={this.handleChange}
+              placeholder="Enter username"
+            />
+        </Form.Group>
+        <Form.Group as={Col}>
+          <Form.Label htmlFor="email">Email</Form.Label>
+          <Form.Control
+            type="email"
+            name="email"
+            type="email"
+            value={this.state.email}
+            autoComplete="false"
+            onChange={this.handleChange}
+            placeholder="Enter email"
+            />
+          <Form.Text>Your email will not be shared</Form.Text>
+        </Form.Group>
+      </Form.Row>
+      <Form.Row>
+        <Form.Group as={Col}>
+          <Form.Label htmlFor="password">Password</Form.Label>
+          <Form.Control
             type="password"
+            name="password"
             value={this.state.password}
             autoComplete="false"
             onChange={this.handleChange}
             onKeyUp={this.checkPassword}
-            placeholder="Password"
+            placeholder="Enter password"
           />
-          <label htmlFor="password">Repeat Password</label>
-          <input
-            name="passwordCheck"
+          <Form.Text>Password must have minimum length of 6</Form.Text>
+        </Form.Group>
+        <Form.Group as={Col}>
+          <Form.Label htmlFor="passwordCheck">Repeat Password</Form.Label>
+          <Form.Control
             type="password"
+            name="passwordCheck"
             value={this.state.passwordCheck}
             autoComplete="false"
             onChange={this.handleChange}
             onKeyUp={this.checkPassword}
-            placeholder="Repeat Password"
+            placeholder="Enter password"
           />
-        </div>
-        <button type="submit">Sign up</button>
-      </form>
+        </Form.Group>
+        </Form.Row>
+        <Form.Text>
+            {passwordCheckMessage &&
+              <Alert variant={variant}>{passwordCheckMessage}</Alert>
+            }
+        </Form.Text>
+        <Button type="submit">Sign up</Button>
+      </Form>
       </>
     );
   }
-}
-
-export default function SignupForm(props) {
-  return <Form />;
 }

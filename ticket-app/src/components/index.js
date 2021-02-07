@@ -3,3 +3,4 @@ export { default as Ticket } from "./ticket";
 export { default as SignupForm } from "./signupform";
 export { default as SigninForm } from "./signinform";
 export { default as ReplyForm } from "./replyform";
+export { default as Footer } from "./footer";

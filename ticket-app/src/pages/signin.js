@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { SigninForm } from "../components";
+import { Form, Button } from "react-bootstrap";
 
-//temp
 class Signout extends Component {
   constructor(props) {
     super(props);
@@ -13,7 +13,6 @@ class Signout extends Component {
   }
 
   handleSubmit(event) {
-    localStorage.removeItem('jwt');
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
 
@@ -26,9 +25,9 @@ class Signout extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <button type="submit">Signout</button>
-      </form>
+      <Form onSubmit={this.handleSubmit}>
+        <Button type="submit">Signout</Button>
+      </Form>
     );
   }
 }

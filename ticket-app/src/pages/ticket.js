@@ -3,7 +3,7 @@ import { Ticket, ReplyForm } from "../components";
 import api from "../utils/api";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import { Form, Button, Card } from "react-bootstrap";
 
 class TicketItem extends React.Component {
   constructor(props) {
@@ -23,44 +23,16 @@ class TicketItem extends React.Component {
 
   async handleClick(event) {
     event.preventDefault();
-
     this.setState({status: "Closed"});
 
     const { id } = this.state;
-    const data = {
-      status: "Closed"
-    }
-    const url = `https://localhost:5001/api/ticket/${id}`;
 
       try {
-        const request = new Request(url, {
-          method: "PUT",
-          body: JSON.stringify(data),
-          headers: new Headers({
-            "Content-Type": "application/json",
-            "Authorization": 'Bearer ' + localStorage.getItem('jwt'),
-          }),
-        });
-
-        fetch(request, {
-          //credentials: "include"
-        })
-          .then((res) => res.json())
-          .then((res) => console.log(res));
-        // const res = await axios({
-        //   method: 'PATCH',
-        //   url: `https://localhost:5001/api/ticket/${id}`,
-        //   headers: {
-        //     "Authorization": 'Bearer ' + localStorage.getItem('jwt'),
-        //   },
-        //   data: {
-        //     status: "Closed",
-        //   }
-        // })
-        // console.log(res);
+        const res = await api.put(`/ticket/${id}`, { status: 'Closed' });
+        const data = res.data;
       }
-      catch (err) {
-        console.log(err);
+      catch (e) {
+        console.log(e);
       }
   }
 
@@ -80,7 +52,7 @@ class TicketItem extends React.Component {
           status: data.status,
         },
       });
-    } catch (e) {
+    } catch(e) {
       console.log(e);
     }
   }
@@ -97,6 +69,7 @@ class TicketItem extends React.Component {
         title={ticket.title}
         content={ticket.content}
         date={ticket.postedOn}
+        status={status}
       />
     );
     console.log(replies);
@@ -105,10 +78,13 @@ class TicketItem extends React.Component {
             <ul>
                 {replies.map((reply) => (
                 <li key={reply.Id}>
+                  <Card>
                     {/* <p>{reply.postedBy}</p> */}
                     <p><i>Posted by: user id#{reply.personId}</i></p>
                     <p><i>On: {new Date(reply.postedOn).toLocaleDateString(navigator.language)}</i></p>
                     <p>{reply.content}</p>
+                  </Card>
+
                 </li>
                 ))}
             </ul>

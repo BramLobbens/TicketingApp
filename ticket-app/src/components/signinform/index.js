@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import {} from "./styles/signinform";
 import api from "../../utils/api";
+import { Form, Button, Alert } from "react-bootstrap";
 
-class Form extends Component {
+export default class SigninForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,36 +48,34 @@ class Form extends Component {
       <>
       {sent ?
         success
-        ? <p>Sign in successful</p>
-        : <p>Something went wrong, please try again.</p>
+        ? <Alert variant='success'>Sign in successful</Alert>
+        : <Alert variant='warning'>Something went wrong, please try again.</Alert>
       : <p></p>
       }
-      <form onSubmit={this.handleSubmit}>
-        <label htmlFor="username">Username</label>
-        <input
+      <Form onSubmit={this.handleSubmit}>
+      <Form.Group>
+        <Form.Label htmlFor="username">Username</Form.Label>
+        <Form.Control
           name="username"
           type="text"
           value={this.state.username}
           autoComplete="false"
           onChange={this.handleChange}
-          placeholder="Username"
+          placeholder="Enter username"
         />
-        <label htmlFor="password">Password</label>
-        <input
+        <Form.Label htmlFor="password">Password</Form.Label>
+        <Form.Control
           name="password"
           type="password"
           value={this.state.password}
           autoComplete="false"
           onChange={this.handleChange}
-          placeholder="Password"
+          placeholder="Enter password"
         />
-        <button type="submit">Sign in</button>
-      </form>
+        </Form.Group>
+        <Button type="submit">Sign in</Button>
+      </Form>
       </>
     );
   }
-}
-
-export default function SigninForm() {
-  return <Form />;
 }
