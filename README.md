@@ -2,29 +2,51 @@
 
 ## Progress
 ### `'api'` Features To-do list:
-- [x] Update ~~Patch~~ (edit: Put) api on ticket status change
-- [x] Revise password restrictions
-- [x] Add default 'Member' role
-- [x] Change implementation of Authorization via HttpOnly Cookie
+- [x] 🎨 Changes: Update ~~Patch~~ (edit: Put) api on ticket status change
+- [x] 🔒 Security: Revise password restrictions
+- [x] ➕ Feature: Add default 'Member' role
+- [x] 🎨 Changes: Change implementation of Authorization via HttpOnly Cookie
 
 ### `'ticket-app'` Features To-do list:
-- [x] Ticket replies
-- [x] 'My Tickets' component view
-- [x] Persistance of tickets and replies upon user deletion
-- [x] Ticket assignee selection
-- [x] Ticket status update selection for ticket issuer
+- [x] ➕Feature: Ticket replies
+- [x] ➕Feature: 'My Tickets' component view
+- [x] 🐛Bugfix: Persistance of tickets and replies upon user deletion
+- [x] ➕Feature: Ticket assignee selection
+- [x] ➕Feature: Ticket status update selection for ticket issuer
+- [x] ➕Feature: Display password validation check upon signup
+- [x] ➕Feature: Show relevant error/succes messages to user
+- [x] 🎨 Changes: Changes to API calls and error handling in code
 - [ ] ~~Update display of username if user deleted~~ &rarr; __*under revision*__
 - [ ] Update nav bar routing on user sign in
 - [ ] Update nav bar display on user sign in
-- [x] Display password validation check upon signup
-- [x] Show relevant error/succes messages to user
+
+Component|Error Handling|Redirects
+---|---|---
+SignupForm|✅|✅
+SigninForm|✅|✅
+TicketForm|🚧|🚧
+ReplyForm| 🚧|🚧
 
 ## About
 
-**to-do**
+1. [to-come-soon](#to-do)
+
+### to-do
 
 ## Deployment
 
-**to-do**
+(Work in Progress)
 
+in `ticketingapp\api` run
+```
+dotnet run
+```
 
+in `ticketingapp\ticket-app` run
+```
+yarn start
+```
+or
+```
+npm start
+```
