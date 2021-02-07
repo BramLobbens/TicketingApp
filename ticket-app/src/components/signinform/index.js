@@ -1,7 +1,9 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import {} from "./styles/signinform";
 import api from "../../utils/api";
+import { Redirect } from "react-router-dom";
 import { Form, Button, Alert } from "react-bootstrap";
+import * as ROUTES from "../../constants/routes";
 
 export default class SigninForm extends Component {
   constructor(props) {
@@ -11,6 +13,9 @@ export default class SigninForm extends Component {
       password: "",
       sent: false,
       success: false,
+      redirectMessage: "",
+      variant: "",
+      errorMessage: ""
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -26,31 +31,43 @@ export default class SigninForm extends Component {
 
     const { username: name, password } = this.state;
 
-    try {
-      const res = await api.post('/signin', { name: name, password: password });
-      this.setState({success: res.status === 200});
+    await api.post('/signin', { name: name, password: password })
+    .then((res) => {
+      localStorage.setItem('userId', res.data.userId);
+      localStorage.setItem('userName', res.data.userName);
 
-      const data = res.data;
-      localStorage.setItem('userId', data.userId);
-      localStorage.setItem('userName', data.userName);
-    }
-    catch (err) {
-      console.log(err);
-      this.setState({success: false});
-    }
-    this.setState({sent: true});
+      this.setState({
+        success: res.status === 200,
+        redirectMessage: "Sign in successful.",
+        variant: "success"
+      })
+    })
+    .catch((error) => {
+      console.log(error.response);
+      this.setState({
+        errorMessage: error !== null ? error.response : "Login failed",
+        success: false,
+      });
+    });
+    setTimeout(() => this.setState({sent: true}), 2000);
   }
 
   render() {
-    const { sent, success } = this.state;
+    const { sent, success, redirectMessage, variant, errorMessage } = this.state;
+
+    if (sent && success) {
+      return (
+        <Redirect to={ROUTES.HOME} />
+      );
+    }
 
     return (
       <>
-      {sent ?
-        success
-        ? <Alert variant='success'>Sign in successful</Alert>
-        : <Alert variant='warning'>Something went wrong, please try again.</Alert>
-      : <p></p>
+      {redirectMessage !== "" &&
+        <Alert variant={variant}>{redirectMessage}</Alert>
+      }
+      {errorMessage !== "" &&
+          <Alert variant='warning'>{errorMessage.status} {errorMessage.statusText}</Alert>
       }
       <Form onSubmit={this.handleSubmit}>
       <Form.Group>

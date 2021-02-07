@@ -19,6 +19,8 @@ export default class SignupForm extends Component {
       success: false,
       redirectMessage: "",
       variant: "",
+      variantpw: "",
+      errorMessages: []
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -38,12 +40,12 @@ export default class SignupForm extends Component {
       this.setState({
         passwordMatch: true,
         passwordCheckMessage: "👍 Passwords match",
-        variant: 'info'});
+        variantpw: 'info'});
     }
     else {
       this.setState({
         passwordCheckMessage: "😦 Passwords are not matching",
-        variant: 'danger'
+        variantpw: 'danger'
       });
     }
   }
@@ -54,30 +56,44 @@ export default class SignupForm extends Component {
   }
 
   async handleSubmit(event) {
-    event.preventDefault();
 
+    event.preventDefault();
     const { username: name, email, password } = this.state;
 
-    try {
-      const res = await api.post('/person', {
-        name: name, email: email, password: password
+    await api.post('/person', {
+      name: name, email: email, password: password
+    })
+    .then((res) => {
+      this.setState({
+        success: (res.status === 200 || res.status === 201),
+        redirectMessage: "Sign in succesful.",
+        variant: "success"
       });
-      this.setState({success: (res.status === 200 || res.status === 201) });
-      this.setState({redirectMessage: "Sign in succesful. Redirecting..."});
-      setTimeout(() => this.setState({success: true}), 2000);
-      const data = res.data;
-    }
-    catch(e) {
-      this.setState({success: false});
-    }
-    this.setState({sent: true});
+    })
+    .catch((error) => {
+      this.setState({
+        errorMessages: [...error.response.data.errors],
+        success: false,
+      });
+    });
+    setTimeout(() => this.setState({sent: true}), 2000);
   }
 
   render() {
 
-    const { passwordCheckMessage, sent, success, redirectMessage, variant } = this.state;
+    const {
+      passwordCheckMessage,
+      sent,
+      success,
+      redirectMessage,
+      variant,
+      variantpw,
+      errorMessages
+    } = this.state;
 
-    if (success) {
+    console.log(errorMessages);
+
+    if (sent && success) {
       return (
           <Redirect to={ROUTES.SIGN_IN} />
       );
@@ -85,13 +101,12 @@ export default class SignupForm extends Component {
 
     return (
       <>
-      <Alert variant='light'>{redirectMessage}</Alert>
-      {sent ?
-        success
-        ? <Alert>Sign in successful. Redirecting...</Alert>
-        : <Alert variant='warning'>Something went wrong, please try again.</Alert>
-      : <p></p>
+      {redirectMessage !== "" &&
+        <Alert variant={variant}>{redirectMessage}</Alert>
       }
+      {errorMessages !== [] && errorMessages.map((err) => (
+          <Alert variant='warning'>{err.code}: {err.description}</Alert>
+      ))}
       <Form onSubmit={this.handleSubmit}>
       <Form.Row>
         <Form.Group as={Col}>
@@ -148,7 +163,7 @@ export default class SignupForm extends Component {
         </Form.Row>
         <Form.Text>
             {passwordCheckMessage &&
-              <Alert variant={variant}>{passwordCheckMessage}</Alert>
+              <Alert variant={variantpw}>{passwordCheckMessage}</Alert>
             }
         </Form.Text>
         <Button type="submit">Sign up</Button>
