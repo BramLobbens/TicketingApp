@@ -6,6 +6,7 @@
 - [x] 🔒 Security: Revise password restrictions
 - [x] ➕ Feature: Add default 'Member' role
 - [x] 🎨 Changes: Change implementation of Authorization via HttpOnly Cookie
+- [x] 🎨 Changes: Delegate signout to api controller
 
 ### `'ticket-app'` Features To-do list:
 - [x] ➕Feature: Ticket replies
@@ -16,6 +17,7 @@
 - [x] ➕Feature: Display password validation check upon signup
 - [x] ➕Feature: Show relevant error/succes messages to user
 - [x] 🎨 Changes: Changes to API calls and error handling in code
+- [x] 🎨 Changes: Change signout implementation
 - [ ] ~~Update display of username if user deleted~~ &rarr; __*under revision*__
 - [ ] Update nav bar routing on user sign in
 - [ ] Update nav bar display on user sign in
@@ -24,8 +26,8 @@ Component|Error Handling|Redirects
 ---|---|---
 SignupForm|✅|✅
 SigninForm|✅|✅
+ReplyForm| ✅|🚧
 TicketForm|🚧|🚧
-ReplyForm| 🚧|🚧
 
 ## About
 
